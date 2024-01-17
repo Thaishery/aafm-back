@@ -2,20 +2,19 @@
 
 namespace App\Controller;
 
-use Exception;
-
 //internal symfony :
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 // use Symfony\Component\HttpFoundation\JsonResponse;
 
 //HTTP :
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 //User related : 
 use App\Entity\User;
 use App\Service\UserValidator;
+use App\Service\UserInternalCreator;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -40,7 +39,7 @@ class ApiLoginController extends AbstractController
     ]);
   }
   #[Route('/api/users/internal/register', name:'api_register', methods:'POST')]
-  public function registerUser(Request $request, UserPasswordHasherInterface $passwordHasher,EntityManagerInterface $manager): Response
+  public function registerUser(Request $request, UserPasswordHasherInterface $passwordHasher,EntityManagerInterface $manager, UserInternalCreator $userCreator): Response
   {
     //vérifie que l'on as bien un post : 
     $postData = json_decode($request->getContent(), false);
@@ -52,7 +51,7 @@ class ApiLoginController extends AbstractController
     if($verifiUserData['isValid'] == false) return $this->json($verifiUserData['messages'], Response::HTTP_FORBIDDEN);
     
     //créer l'utilisateur : 
-    $user = $this->createUser($postData, $passwordHasher,$manager);
+    $user = $userCreator->createInternalUser($postData, $passwordHasher, $manager);
     if(!$user) return $this->json(['message' => 'Erreur lors de la création de l\'utilisateur'],Response::HTTP_INTERNAL_SERVER_ERROR);
     
     //réponse ok (utilisateur créer) : 
@@ -61,21 +60,4 @@ class ApiLoginController extends AbstractController
     , Response::HTTP_OK);
   }
   
-  private function createUser($postData, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $manager){
-    $user = new User(); 
-    try{
-      $user->setIsInternal(true);
-      $user->setRoles(['ROLE_USER']);
-      $user->setEmail($postData->email);
-      $user->setPassword($passwordHasher->hashPassword($user, $postData->password));
-      if(!empty($postData->firstname)) $user->setFirstname($postData->firstname);
-      if(!empty($postData->lastname)) $user->setFirstname($postData->lastname);
-      $manager->persist($user);
-      $manager->flush();
-      return true;
-    }catch(Exception $error){
-      return false;
-    }
-  }
-
 }

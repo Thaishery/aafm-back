@@ -3,7 +3,6 @@
 namespace App\Tests\Service;
 
 use App\Service\UserValidator;
-use stdClass;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class UserValidatorTest extends KernelTestCase{
