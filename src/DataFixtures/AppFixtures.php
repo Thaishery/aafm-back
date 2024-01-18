@@ -8,17 +8,20 @@ use Doctrine\Persistence\ObjectManager;
 
 class AppFixtures extends Fixture
 {
-    public function load(ObjectManager $manager): void
-    {
-        //ensure we already have an user to test against :  
+  public function load(ObjectManager $manager): void
+  {
+    // Check if the user with the email already exists
+    $existingUser = $manager->getRepository(User::class)->findOneBy(['email' => $this->getFakeEmail()]);
+    if (!$existingUser) {
         $user = new User();
-        $user->setEmail('alreadyExist@gdeb.fr');
+        $user->setEmail($this->getFakeEmail());
         $user->setPassword('p4$sW0rD1');
         $user->setIsInternal(1);
-
-        // $product = new Product();
         $manager->persist($user);
-
         $manager->flush();
     }
+  }
+  public function getFakeEmail():string{
+    return 'alreadyExist@gdeb.fr';
+  }
 }
