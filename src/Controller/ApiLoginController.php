@@ -25,7 +25,7 @@ class ApiLoginController extends AbstractController
 {
   #[Route('/api/users/internal/login', name: 'api_login')]
   // public function index(): JsonResponse
-  public function index(#[CurrentUser] ? User $user): Response
+  public function login(#[CurrentUser] ? User $user): Response
   {
     if (null === $user) {
       return $this->json([
@@ -43,6 +43,7 @@ class ApiLoginController extends AbstractController
   {
     //vérifie que l'on as bien un post : 
     $postData = json_decode($request->getContent(), false);
+    // var_dump($postData);
     if(!$postData||empty($postData)) return $this->json(['message' =>'Données invalide'], Response::HTTP_FORBIDDEN); 
     
     //vérifie les donnée utilisateurs : 

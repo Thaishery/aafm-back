@@ -2,13 +2,12 @@
 
 namespace App\Tests\Service;
 
-use App\Repository\UserRepository;
 use App\Service\UserInternalCreator;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class UserInternalCreatorTest extends WebTestCase{
+class UserInternalCreatorTest extends KernelTestCase{
   private $entityManager;
   private $passwordHasher;
 
@@ -63,15 +62,3 @@ class UserInternalCreatorTest extends WebTestCase{
     $this->assertEquals(false, $userCreator->createInternalUser((object)$badPassword, $this->passwordHasher, $this->entityManager),'badPassword');
   }
 }
-
-
-  // private $entityManager;
-  // private $client;
-
-  // protected function setUp(): void
-  // {
-  //   parent::setUp();
-  //   $this->client = static::createClient();
-  //   $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
-  // }
-// tests/Service/UserInternalCreatorTest.php
