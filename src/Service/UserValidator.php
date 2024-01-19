@@ -61,8 +61,9 @@ class UserValidator{
     foreach($postData as $key=>$val){
       switch($key){
         case 'email': 
+          if(!filter_var($val,FILTER_VALIDATE_EMAIL)) 
           $result['isValid'] = false;
-          $result['messages'] = [$key=>'l\'email ne peux pas être modifier'];
+          $result['messages'] = [$key=>'Email invalide'];
           break;
         case 'password':
           if(empty($postData->passwordVerif)){

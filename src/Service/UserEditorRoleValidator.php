@@ -8,9 +8,9 @@ class UserEditorRoleValidator{
   private $manager;
   private $userToEdit;
 
-  public function __construct()
+  public function __construct(EntityManagerInterface $manager)
   {
-    $this->manager = new EntityManagerInterface();
+    $this->manager = $manager;
   }
 
   public function verifiUserEditPermision(User $user, object $postData):bool{

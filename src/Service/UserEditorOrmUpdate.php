@@ -9,8 +9,9 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class UserEditorOrmUpdate{
   private $manager;
   
-  public function __construct(){
-    $this->manager = new EntityManagerInterface();
+  public function __construct(EntityManagerInterface $manager)
+  {
+    $this->manager = $manager;
   }
 
   /**
@@ -21,14 +22,13 @@ class UserEditorOrmUpdate{
       foreach($postData as $key=>$val){
         switch($key){
           case 'password':
-            //!password encoder. 
-            $user->setPassword($passwordHasher->hashPassword($user, $postData->password));
+            $user->setPassword($passwordHasher->hashPassword($user, $val));
             break;
           case 'firstname':
-            $user->setFirstname($postData->firstname);
+            $user->setFirstname($val);
             break;
           case 'lastname':
-            $user->setLastname($postData->lastname);
+            $user->setLastname($val);
             break;
           default : 
            break;
