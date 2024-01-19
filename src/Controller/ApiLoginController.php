@@ -17,6 +17,7 @@ use App\Service\UserValidator;
 use App\Service\UserInternalCreator;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface; // Import JWTTokenManagerInterface
 
 //database persistance : 
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,15 +25,16 @@ use Doctrine\ORM\EntityManagerInterface;
 class ApiLoginController extends AbstractController
 {
   #[Route('/api/users/internal/login', name: 'api_login')]
-  // public function index(): JsonResponse
-  public function login(#[CurrentUser] ? User $user): Response
+  public function login(#[CurrentUser] ? User $user,JWTTokenManagerInterface $jwtManager): Response
   {
     if (null === $user) {
       return $this->json([
           'message' => 'missing credentials',
       ], Response::HTTP_UNAUTHORIZED);
     }
-    $token = "ok"; // somehow create an API token for $user
+
+    $token = $jwtManager->create($user);
+
     return $this->json([
         'user'  => $user->getUserIdentifier(),
         'token' => $token,
@@ -48,8 +50,8 @@ class ApiLoginController extends AbstractController
     
     //vérifie les donnée utilisateurs : 
     $userValidator = new UserValidator;
-    $verifiUserData = $userValidator->verifiUserData($postData); 
-    if($verifiUserData['isValid'] == false) return $this->json($verifiUserData['messages'], Response::HTTP_FORBIDDEN);
+    $verifiUserDataCreate = $userValidator->verifiUserDataCreate($postData); 
+    if($verifiUserDataCreate['isValid'] == false) return $this->json($verifiUserDataCreate['messages'], Response::HTTP_FORBIDDEN);
     
     //créer l'utilisateur : 
     $user = $userCreator->createInternalUser($postData, $passwordHasher, $manager);
@@ -60,5 +62,5 @@ class ApiLoginController extends AbstractController
       $postData
     , Response::HTTP_OK);
   }
-  
+
 }

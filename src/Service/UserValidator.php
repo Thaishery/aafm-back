@@ -2,7 +2,7 @@
 namespace App\Service;
 
 class UserValidator{
-  public function verifiUserData($postData){
+  public function verifiUserDataCreate($postData){
     $result = [
       'isValid' => true,
       'messages'=> [],

@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Controller\ApiLoginController;
 use App\Service\UserInternalCreator;
 use Doctrine\ORM\EntityManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +18,8 @@ class LoginTest extends KernelTestCase
   private $entityManager;
   private $passwordHasher;
   private $userCreator;
-  
+  private $jwtManager;
+
   protected function setUp(): void
   {
     parent::setUp();
@@ -25,11 +27,12 @@ class LoginTest extends KernelTestCase
     $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
     $this->passwordHasher = self::getContainer()->get(UserPasswordHasherInterface::class);
     $this->userCreator = self::getContainer()->get(UserInternalCreator::class);
+    $this->jwtManager = self::getContainer()->get(JWTTokenManagerInterface::class);
   }
 
   public function testLoginSuccess(){
     $user =  $this->entityManager->getRepository(User::class)->findOneBy(['email' => 'alreadyExist@gdeb.fr']);
-    $response = $this->apiLoginController->login($user);
+    $response = $this->apiLoginController->login($user, $this->jwtManager);
     $this->assertInstanceOf(JsonResponse::class,$response);
     $data = json_decode($response->getContent(),true);
     $this->assertEquals('alreadyExist@gdeb.fr', $data['user']);
@@ -37,7 +40,7 @@ class LoginTest extends KernelTestCase
   }
 
   public function testLoginFail(){
-    $response = $this->apiLoginController->login(null);
+    $response = $this->apiLoginController->login(null,$this->jwtManager);
     $this->assertInstanceOf(JsonResponse::class,$response);
     $data = json_decode($response->getContent(),true);
     $this->assertEquals('missing credentials', $data['message']);

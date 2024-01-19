@@ -6,7 +6,7 @@ use App\Service\UserValidator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class UserValidatorTest extends KernelTestCase{
-  public function testUserValidatorverifiUserData(){
+  public function testUserValidatorCreate(){
     $userValidator = new UserValidator();
     $failOnEmail = [
       'email' => 'test',
@@ -63,22 +63,22 @@ class UserValidatorTest extends KernelTestCase{
     ];
     
     //email mail formé: 
-    $this->assertEquals(false, $userValidator->verifiUserData((object)$failOnEmail)['isValid']);
+    $this->assertEquals(false, $userValidator->verifiUserDataCreate((object)$failOnEmail)['isValid']);
     //password trop cour: 
-    $this->assertEquals(false, $userValidator->verifiUserData((object)$failOnShortPassword)['isValid']);
+    $this->assertEquals(false, $userValidator->verifiUserDataCreate((object)$failOnShortPassword)['isValid']);
     //firstName invalide :
-    $this->assertEquals(false, $userValidator->verifiUserData((object)$failOnFirstName)['isValid']);
+    $this->assertEquals(false, $userValidator->verifiUserDataCreate((object)$failOnFirstName)['isValid']);
     //lastName invalide : 
-    $this->assertEquals(false, $userValidator->verifiUserData((object)$failOnLastName)['isValid']);
+    $this->assertEquals(false, $userValidator->verifiUserDataCreate((object)$failOnLastName)['isValid']);
     //first et lastname invalide : 
-    $this->assertEquals(false, $userValidator->verifiUserData((object)$failOnFirstAndLastName)['isValid']);
+    $this->assertEquals(false, $userValidator->verifiUserDataCreate((object)$failOnFirstAndLastName)['isValid']);
     //empty Email : 
-    $this->assertEquals(false, $userValidator->verifiUserData((object)$failOnEmptyEmail)['isValid']);
+    $this->assertEquals(false, $userValidator->verifiUserDataCreate((object)$failOnEmptyEmail)['isValid']);
     //empty password : 
-    $this->assertEquals(false, $userValidator->verifiUserData((object)$failOnEmptyPassword)['isValid']);
+    $this->assertEquals(false, $userValidator->verifiUserDataCreate((object)$failOnEmptyPassword)['isValid']);
     //aditional field : 
-    $this->assertEquals(false, $userValidator->verifiUserData((object)$failOnAditionalField)['isValid']);
+    $this->assertEquals(false, $userValidator->verifiUserDataCreate((object)$failOnAditionalField)['isValid']);
     //valid Data  : 
-    $this->assertEquals(true, $userValidator->verifiUserData((object)$valid)['isValid']);
+    $this->assertEquals(true, $userValidator->verifiUserDataCreate((object)$valid)['isValid']);
   }
 }

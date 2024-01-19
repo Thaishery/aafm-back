@@ -12,7 +12,8 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 class UserRepositoryTest extends KernelTestCase
-{  private $entityManager;
+{  
+  private $entityManager;
 
   protected function setUp(): void
   {
