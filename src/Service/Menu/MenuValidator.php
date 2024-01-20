@@ -1,8 +1,6 @@
 <?php
 namespace App\Service\Menu;
 
-use App\Entity\Menus;
-
 class MenuValidator {
   public function validateMenu(object $postData){
     $result = $this->getResult();
