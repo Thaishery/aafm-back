@@ -10,7 +10,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AccessDeniedSubscriber implements EventSubscriberInterface
 {
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents():array
     {
         return [
             'kernel.exception' => 'onKernelException',

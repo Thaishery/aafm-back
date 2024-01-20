@@ -42,8 +42,10 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/api/auth, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/users/internal/login, roles: PUBLIC_ACCESS }
+        # Prévision oauth Google : 
+        - { path: ^/api/user/extenal/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/public, roles: PUBLIC_ACCESS}
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }

@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Service\UserEditorOrmUpdate;
-use App\Service\UserEditorRoleValidator;
-use App\Service\UserValidator;
+use App\Service\User\UserEditorOrmUpdate;
+use App\Service\User\UserEditorRoleValidator;
+use App\Service\User\UserValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,7 +30,6 @@ class UserManagerController extends AbstractController
     
     //vérifier user. 
     //? admin ou utilisateur actuel ? 
-
     $userValidator = new UserEditorRoleValidator($manager); 
     $isValidUser = $userValidator->verifiUserEditPermision($user, $postData);
     if(!$isValidUser) return $this->json(['message'=>'Action Imposible'],JsonResponse::HTTP_FORBIDDEN);

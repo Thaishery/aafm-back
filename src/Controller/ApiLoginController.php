@@ -5,7 +5,6 @@ namespace App\Controller;
 //internal symfony :
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-// use Symfony\Component\HttpFoundation\JsonResponse;
 
 //HTTP :
 use Symfony\Component\HttpFoundation\Request;
@@ -13,8 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 //User related : 
 use App\Entity\User;
-use App\Service\UserValidator;
-use App\Service\UserInternalCreator;
+use App\Service\User\UserValidator;
+use App\Service\User\UserInternalCreator;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface; // Import JWTTokenManagerInterface

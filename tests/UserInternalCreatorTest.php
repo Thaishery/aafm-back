@@ -2,7 +2,7 @@
 
 namespace App\Tests\Service;
 
-use App\Service\UserInternalCreator;
+use App\Service\User\UserInternalCreator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;

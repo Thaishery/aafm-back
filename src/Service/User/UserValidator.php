@@ -1,5 +1,5 @@
 <?php
-namespace App\Service;
+namespace App\Service\User;
 
 class UserValidator{
 

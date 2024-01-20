@@ -4,7 +4,7 @@ namespace App\Tests\Controller;
 
 use App\Entity\User;
 use App\Controller\ApiLoginController;
-use App\Service\UserInternalCreator;
+use App\Service\User\UserInternalCreator;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -62,7 +62,8 @@ class LoginTest extends KernelTestCase
   {
     $postData = [
       'email' => 'gdeb.fr',
-      'password' => 'MyPassword'
+      'password' => 'MyPassword',
+      'passwordVerif' => 'MyPassword'
     ];
     $jsonContent = json_encode($postData);
     $request = Request::create('/api/users/internal/register', 'POST', [], [], [], [], $jsonContent);
@@ -71,14 +72,15 @@ class LoginTest extends KernelTestCase
     $statusCode = $response->getStatusCode();
     $data = json_decode($response->getContent(),true);
     $this->assertEquals(JsonResponse::HTTP_FORBIDDEN, $statusCode);
-    $this->assertEquals('Email invalide',$data[0]);
+    $this->assertEquals('Email invalide',$data["email"]);
   }
 
   public function testRegisterSuccess()
   {
     $postData = [
       'email' => 'test1@gdeb.fr',
-      'password' => 'MyPassword'
+      'password' => 'MyPassword',
+      'passwordVerif' => 'MyPassword'
     ];
     $jsonContent = json_encode($postData);
     $request = Request::create('/api/users/internal/register', 'POST', [], [], [], [], $jsonContent);

@@ -2,7 +2,7 @@
 
 namespace App\Tests\Service;
 
-use App\Service\UserValidator;
+use App\Service\User\UserValidator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class UserValidatorTest extends KernelTestCase{
@@ -58,6 +58,7 @@ class UserValidatorTest extends KernelTestCase{
     $valid = [
       'email' => 'gdeb@gdeb.fr',
       'password' => 'p4$sW0rD1',
+      'passwordVerif'=>'p4$sW0rD1',
       'firstname'=>'Guillaume',
       'lastname' =>'DEBUCQUET',
     ];
