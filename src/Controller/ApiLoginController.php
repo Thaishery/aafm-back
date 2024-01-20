@@ -53,6 +53,8 @@ class ApiLoginController extends AbstractController
     if($verifiUserDataCreate['isValid'] == false) return $this->json($verifiUserDataCreate['messages'], Response::HTTP_FORBIDDEN);
     
     //créer l'utilisateur : 
+    //todo : gestion erreur email already in use... (gérer mais changer le message d'erreurs lors du cas )
+    //todo : adaptation code necessaire. 
     $user = $userCreator->createInternalUser($postData, $passwordHasher, $manager);
     if(!$user) return $this->json(['message' => 'Erreur lors de la création de l\'utilisateur'],Response::HTTP_INTERNAL_SERVER_ERROR);
     

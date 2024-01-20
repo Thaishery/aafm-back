@@ -6,47 +6,60 @@ class UserValidator{
   public function verifiUserDataCreate($postData){
     $result = $this->getResult();
 
-    if(empty($postData)) return $result = ['isValid' => false, 'messages' => ['postData empty']];
-    if(gettype($postData) !== "object") return $result = ['isValid' => false, 'messages'=> ['not an object']];
+    if (empty($postData)) {
+      $result['isValid'] = false;
+      $result['messages'][] = 'postData empty';
+      return $result;
+    }
+    if (gettype($postData) !== "object") {
+      $result['isValid'] = false;
+      $result['messages'][] = 'not an object';
+      return $result;
+    }
     if(
       empty($postData->email)
       ||empty($postData->password)
       ||empty($postData->passwordVerif)
-      ) return $result = ['isValid'=> false , 'messages'=>['missing fields']];
+      ) {
+        $result['isValid'] = false;
+        $result['messages'][] ='missing fields';
+        return $result;
+      }
     foreach($postData as $key=>$val){
       switch($key){
         case 'email':
-          if(!filter_var($val,FILTER_VALIDATE_EMAIL)) 
-          $result['isValid'] = false;
-          $result['messages'] = [$key=>'Email invalide'];
+          if(!filter_var($val,FILTER_VALIDATE_EMAIL)) {
+            $result['isValid'] = false;
+            $result['messages'][$key][] = 'Email invalide';
+          }
         break;
         case 'password':
           if (!preg_match('/^.{8,}$/', $val)) {
             $result['isValid'] = false;
-            $result['messages'] = [$key=>'Mot de passe invalide'];
+            $result['messages'][$key][] = 'Mot de passe invalide';
         }
         break;
         case 'passwordVerif':
           if($val !== $postData->password){
             $result['isValid'] = false;
-            $result['messages'] = [$key=>'les mots de passes ne sont pas identiques'];
+            $result['messages'][$key][] = 'les mots de passes ne sont pas identiques';
           }
         break;
         case 'firstname':
           if (!preg_match('/^[\w\'\-,.][^0-9_!¡?÷?¿\/\\+=@#$%^ˆ&*(){}|~<>;:[\]]{2,}$/', $val)) {
             $result['isValid'] = false;
-            $result['messages'] = [$key=>'firstname invalide'];
+            $result['messages'][$key][] = 'firstname invalide';
         }
         break;
         case 'lastname':
           if (!preg_match('/^[\w\'\-,.][^0-9_!¡?÷?¿\/\\+=@#$%^ˆ&*(){}|~<>;:[\]]{2,}$/', $val)) {
             $result['isValid'] = false;
-            $result['messages'] = [$key=>'lastname invalide'];
+            $result['messages'][$key][] = 'lastname invalide';
         }
         break;
         default: 
           $result['isValid'] = false; 
-          $result['messages'] = ['default'=>'champ non gérer'];
+          $result['messages']['default'][] = 'champ non gérer';
         break;
       }
     }
@@ -55,15 +68,24 @@ class UserValidator{
 
   public function verifiUserDataEdit($postData){
     $result = $this->getResult();
-    if(empty($postData)) return $result = ['isValid' => false, 'messages' => ['postData empty']];
-    if(gettype($postData) !== "object") return $result = ['isValid' => false, 'messages'=> ['not an object']];
+    if (empty($postData)) {
+      $result['isValid'] = false;
+      $result['messages'][] = 'postData empty';
+      return $result;
+    }
+    if (gettype($postData) !== "object") {
+      $result['isValid'] = false;
+      $result['messages'][] = 'not an object';
+      return $result;
+    }
     if(empty($postData->email)) return $result = ['isValid' => false, 'messages'=> ['missing email, we need it to update the user.']];
     foreach($postData as $key=>$val){
       switch($key){
         case 'email': 
-          if(!filter_var($val,FILTER_VALIDATE_EMAIL)) 
-          $result['isValid'] = false;
-          $result['messages'] = [$key=>'Email invalide'];
+          if(!filter_var($val,FILTER_VALIDATE_EMAIL)){
+            $result['isValid'] = false;
+            $result['messages'][$key][] = 'Email invalide';
+          }
           break;
         case 'password':
           if(empty($postData->passwordVerif)){
@@ -72,7 +94,7 @@ class UserValidator{
           }
           if (!preg_match('/^.{8,}$/', $val)) {
             $result['isValid'] = false;
-            $result['messages'] = [$key=>'Mot de passe invalide'];
+            $result['messages'][$key][] = 'Mot de passe invalide';
           }
           break;
         case 'passwordVerif':
@@ -82,24 +104,24 @@ class UserValidator{
           }
           if($val !== $postData->password){
             $result['isValid'] = false;
-            $result['messages'] = [$key=>'les mots de passes ne sont pas identiques'];
+            $result['messages'][$key][] = 'les mots de passes ne sont pas identiques';
           }
           break;
         case 'firstname':
           if (!preg_match('/^[\w\'\-,.][^0-9_!¡?÷?¿\/\\+=@#$%^ˆ&*(){}|~<>;:[\]]{2,}$/', $val)) {
             $result['isValid'] = false;
-            $result['messages'] = [$key=>'firstname invalide'];
+            $result['messages'][$key][] = 'firstname invalide';
           }
           break;
         case 'lastname':
           if (!preg_match('/^[\w\'\-,.][^0-9_!¡?÷?¿\/\\+=@#$%^ˆ&*(){}|~<>;:[\]]{2,}$/', $val)) {
             $result['isValid'] = false;
-            $result['messages'] = [$key=>'lastname invalide'];
+            $result['messages'][$key][] = 'lastname invalide';
           }
           break;
         default: 
           $result['isValid'] = false; 
-          $result['messages'] = ['default'=>'champ non gérer'];
+          $result['messages']['default'][] = 'champ non gérer';
           break;
       }
     }
