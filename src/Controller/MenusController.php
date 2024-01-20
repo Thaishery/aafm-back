@@ -29,7 +29,7 @@ class MenusController extends AbstractController
   {
 		$existingMenu = $manager->getRepository(Menus::class)->findOneBy(['Role' => 'ROLE_PUBLIC']);
 		if(!$existingMenu) return $this->json(['message'=>'Menu non trouvé'], JsonResponse::HTTP_OK);
-    return $this->json([$existingMenu->getEntries()],JsonResponse::HTTP_OK);
+    return $this->json(['entries'=>$existingMenu->getEntries(),'role'=>$existingMenu->getRole()],JsonResponse::HTTP_OK);
   }
 
 	#[Route('/api/auth/menu', name: 'auth_public_menu', methods: 'GET')]
@@ -37,7 +37,7 @@ class MenusController extends AbstractController
   {
 		$existingMenu = $manager->getRepository(Menus::class)->findOneBy(['Role' => 'ROLE_PUBLIC']);
 		if(!$existingMenu) return $this->json(['message'=>'Menu non trouvé'], JsonResponse::HTTP_OK);
-    return $this->json([$existingMenu->getEntries()],JsonResponse::HTTP_OK);
+    return $this->json(['entries'=>$existingMenu->getEntries(),'role'=>$existingMenu->getRole()],JsonResponse::HTTP_OK);
   }
 
   #[Route('/api/auth/menu/{role}', name: 'auth_menu', methods: 'GET')]
@@ -47,7 +47,7 @@ class MenusController extends AbstractController
 		if(!$this->roleChecker->checkUserHaveRole(strtoupper($role), $user))return $this->json(['message'=>'Vous devez poseder ce role pour voir le menu'], JsonResponse::HTTP_FORBIDDEN);
 		$existingMenu = $manager->getRepository(Menus::class)->findOneBy(['Role' => $role]);
 		if(!$existingMenu) return $this->json(['message'=>'Menu non trouvé'], JsonResponse::HTTP_OK);
-    return $this->json([$existingMenu->getEntries()],JsonResponse::HTTP_OK);
+    return $this->json(['entries'=>$existingMenu->getEntries(),'role'=>$existingMenu->getRole()],JsonResponse::HTTP_OK);
   }
   
 	#[Route('/api/auth/menu', name: 'add_menu', methods:'POST')]
