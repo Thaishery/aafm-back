@@ -1,9 +1,6 @@
-# lance bdd
-# lance php (back)
-# ./aafm-back:/???/symfony. 
-# lance nginx (front)
-# ./aafm-frot:/usr/aafm
-#a copier a la racine du prog (qui dois contenir aafm-front + aafm-back)
+# docker compose build
+# docker compose up -d (-d) si pas de log necesseraires (sur serveur ...)
+
 version : '3.8'
 
 services: 
@@ -42,41 +39,27 @@ services:
     depends_on:
       - database
       - database-test
-  nginx-back:
-    container_name: nginx-back
-    image: nginx:stable-alpine
-    ports:
-      - '8080:80'
-    volumes:
-      - ./aafm-back:/var/www/symfony_docker
-      - ./aafm-back/nginx/default.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - php
-      - database
+  # nginx-back:
+  #   container_name: nginx-back
+  #   image: nginx:stable-alpine
+  #   ports:
+  #     - '8080:80'
+  #   volumes:
+  #     - ./aafm-back:/var/www/symfony_docker
+  #     - ./aafm-back/nginx/default.conf:/etc/nginx/conf.d/default.conf
+  #   depends_on:
+  #     - php
+  #     - database
+  #     - database-test
   nginx-front:
     container_name: nginx-front
     build:
       context: ./aafm-front
+    # tty: true  # Allocate a pseudo-TTY for interactive shell
+    # stdin_open: true  # Keep STDIN open for interactive shell
+    # command: ["/bin/bash"]
     ports:
       - "8081:80"
     volumes:
-      - ./aafm-front:/var/www/aafm-front
-      - ./aafm-front/nginx/default.conf:/etc/nginx/conf.d/default.
-###> doctrine/doctrine-bundle ###
-  # database:
-  #   image: postgres:${POSTGRES_VERSION:-15}-alpine
-  #   environment:
-  #     POSTGRES_DB: ${POSTGRES_DB:-app}
-  #     # You should definitely change the password in production
-  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-  #     POSTGRES_USER: ${POSTGRES_USER:-app}
-  #   volumes:
-  #     - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
-
-volumes:
-###> doctrine/doctrine-bundle ###
-  database_data:
-###< doctrine/doctrine-bundle ###
+      # - ./aafm-front:/usr/aafm-front
+      - ./aafm-front/nginx/default.conf:/etc/nginx/http.d/default.conf

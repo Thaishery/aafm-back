@@ -1,6 +1,6 @@
 # php + composer + symfony. 
 # run test + start symfony.
-FROM php:8.1-fpm
+FROM php:8.2-fpm
 RUN apt update \
     && apt install -y zlib1g-dev g++ git libicu-dev zip libzip-dev zip \
     && docker-php-ext-install intl opcache pdo pdo_mysql \
@@ -21,6 +21,11 @@ RUN git config --global user.email "gdeb@gdeb.fr" \
     && git config --global user.name "Thaishery"
 
 WORKDIR /var/www
+
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
+
 # EXPOSE 9000
-RUN symfony server:start --port=9000 -d
+# RUN symfony server:start --port=9000 -d
 # CMD symfony server:start --port=9000 -d
