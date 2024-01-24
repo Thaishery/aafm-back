@@ -87,4 +87,19 @@ class Categories
 
         return $this;
     }
+
+    /**
+     * Returns an array representation of the entity.
+     *
+     * @return array
+     */
+    public function populate(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'articles'=>$this->getArticles(),
+            'content'=>$this->getContent()
+        ];
+    }
 }
