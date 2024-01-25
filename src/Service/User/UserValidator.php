@@ -1,12 +1,12 @@
 <?php
 namespace App\Service\User;
 
-class UserValidator{
-  private $result;
+use App\Service\DefaultValidator;
 
+class UserValidator extends DefaultValidator {
   public function __construct()
   {
-    $this->result = $this->getResult();
+    parent::__construct();
   }
 
   public function verifiUserDataCreate($postData){
@@ -36,13 +36,6 @@ class UserValidator{
     };
     $this->validateDatas($postData);
     return $this->result;  
-  }
-  
-  private function getResult():array{
-    return [
-      'isValid' => true,
-      'messages'=> [],
-    ];
   }
 
   private function validateDatas($postData):void{
@@ -95,18 +88,4 @@ class UserValidator{
     }
   }
   
-  private function validatePostDataLength(object $postData):void{
-    if (empty($postData)) {
-      $this->result['isValid'] = false;
-      $this->result['messages'][] = 'postData empty';
-    }
-    if (gettype($postData) !== "object") {
-      $this->result['isValid'] = false;
-      $this->result['messages'][] = 'not an object';
-    }
-    if(count(get_object_vars(($postData))) > 5){
-      $this->result['isValid'] = false;
-      $this->result['messages']['lengthValidation'] = 'too much properties';
-    }
-  }
 }

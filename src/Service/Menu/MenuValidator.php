@@ -1,11 +1,12 @@
 <?php
 namespace App\Service\Menu;
 
-class MenuValidator {
-  private $result;
+use App\Service\DefaultValidator;
+
+class MenuValidator extends DefaultValidator {
   public function __construct()
   {
-    $this->result = $this->getResult();
+    parent::__construct();
   }
   public function validateMenu(object $postData){
     $this->validatePostDataLength($postData);
@@ -18,6 +19,7 @@ class MenuValidator {
           if (gettype($val) !== 'array') {
             $this->result['isValid'] = false;
             $this->result['messages'][$key][] = 'should be an array';
+            //? Break ici car on ne veux pas poursuivre vers le traitement parseEntrieData (on enverais autre chose qu'un tacbleau ... )
             break;
           }
           $this->parseEntriesData($val,$key);
@@ -36,6 +38,7 @@ class MenuValidator {
     }
     return $this->result;
   }
+  
   public function validateEditMenu(object $postData){
     $this->validatePostDataLength($postData);
 
@@ -60,28 +63,6 @@ class MenuValidator {
     return $this->result;
   }
   
-  private function getResult(): array {
-    return [
-      'isValid'  => true,
-      'messages' => [],
-    ];
-  }
-
-  private function validatePostDataLength(object $postData):void{
-    if (empty($postData)) {
-      $this->result['isValid'] = false;
-      $this->result['messages'][] = 'postData empty';
-    }
-    if (gettype($postData) !== "object") {
-      $this->result['isValid'] = false;
-      $this->result['messages'][] = 'not an object';
-    }
-    if(count(get_object_vars(($postData))) > 5){
-      $this->result['isValid'] = false;
-      $this->result['messages']['lengthValidation'] = 'too much properties';
-    }
-  }
-
   private function parseEntriesData($entries, $parent):void{
     foreach ($entries as $skey => $sval) {
       foreach ($sval as $properti => $value) {
