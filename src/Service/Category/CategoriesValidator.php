@@ -2,14 +2,17 @@
 namespace App\Service\Category;
 
 use App\Service\DefaultValidator;
+use App\Service\Modules\ModulesValidator;
 
 class CategoriesValidator extends DefaultValidator {
   private $valiableModulesType;
+  private $moduleValidator; 
   public function __construct()
   {
     parent::__construct();
-    //? for now ... may be moved to it's own class to failitate maintnability . 
-    $this->valiableModulesType = $this->setValiableModulesType();
+    //? for now ... may be moved to it's own class to failitate maintnability .
+    $this->moduleValidator = new ModulesValidator(); 
+    $this->valiableModulesType =  $this->moduleValidator->getValiableModulesType();
     // $this->maxPost = 5;
   }
 
@@ -69,47 +72,11 @@ class CategoriesValidator extends DefaultValidator {
             }
             break;
           case 'module_content':
-            dump($val->type);
-            $this->moduleTypeValidators($val->type,$value);
+            //? on utilise ModulesValidator qui vas renvoyer la même structure que $this->result et array_merge le resultat : 
+            $this->result = array_merge($this->result, $this->moduleValidator->moduleTypeValidators($val->type,$value));
         }
       }
     }
   }
-  private function setValiableModulesType():array{
-    return [
-      'slider',
 
-    ];
-  }
-
-
-  //! ce code sera potentielement dupliqué ... 
-  //todo : le refacto dans ca propre class afin d'éviter ceci . 
-  //! ces fonction devrons donc return des value afin des les envoyer a XxValidator (Categories/Pages(?)/Articles...)
-  private function moduleTypeValidators($type,$val){
-    switch($type){
-      case 'slider':
-        $this->validateSlider($val);
-        break;
-      default : 
-        $this->result['isValid'] = false;
-        $this->result['messages']['moduleValidation'][] = 'type de module non reconu.';
-        break;
-    }
-  }
-
-  private function validateSlider($slider){
-    foreach($slider as $key=>$val){
-      foreach($val as $skey=>$sval){
-        switch($skey){
-          case 'src' :
-            if(!filter_var($sval,FILTER_VALIDATE_URL)){
-              $this->result['isValid'] = false;
-              $this->result['messages']['slider'][$skey][] = 'url non valide.';
-            }
-            break;
-        }
-      }
-    }
-  }
 }
