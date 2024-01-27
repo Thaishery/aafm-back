@@ -72,8 +72,14 @@ class CategoriesValidator extends DefaultValidator {
             }
             break;
           case 'module_content':
+            if(!isset($val->type)){
+              $this->result['isValid'] = false;
+              $this->result['messages']['type'][] = 'type de module manquant.';
+              break;
+            }
             //? on utilise ModulesValidator qui vas renvoyer la même structure que $this->result et array_merge le resultat : 
-            $this->result = array_merge($this->result, $this->moduleValidator->moduleTypeValidators($val->type,$value));
+            $result = $this->moduleValidator->moduleTypeValidators($val->type,$value);
+            $this->result = array_merge($this->result, $result);
         }
       }
     }

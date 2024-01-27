@@ -25,7 +25,15 @@ class ModulesValidator {
   public function moduleTypeValidators($type,$val):array{
     switch($type){
       case 'slider':
+        if(!is_array($val)){
+          $this->result['isValid'] = false;
+          $this->result['messages']['moduleValidation'][] = 'Le slider devrais être un array.';
+          break;
+        }
         $this->validateSlider($val);
+        break;
+      case 'simpleText':
+        dump($val);
         break;
       default : 
         $this->result['isValid'] = false;
