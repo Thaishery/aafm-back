@@ -33,7 +33,8 @@ class ModulesValidator {
         $this->validateSlider($val);
         break;
       case 'simpleText':
-        dump($val);
+        // dump($val);
+        $this->validateSimpleText($val);
         break;
       default : 
         $this->result['isValid'] = false;
@@ -84,5 +85,52 @@ class ModulesValidator {
         }
       }
     }
+  }
+  private function validateSimpleText($text):void{
+    foreach($text as $key=>$module){
+      foreach ($module as $properties=>$value){
+        if(!isset($module->title)){
+          $this->result['isValid'] = false;
+          $this->result['messages']['Title'][] = 'Titre du module manquant.';
+        }
+        switch($properties){
+          case 'title':
+            if(!preg_match('/\w{2,255}/',$value)){
+              $this->result['isValid'] = false;
+              $this->result['messages'][$properties][] = 'Titre du module manquant.';
+            }
+            break;
+          case 'content': 
+            if(!is_array($value)){
+              $this->result['isValid'] = false;
+              $this->result['messages'][$properties][] = 'Should be an array.';
+            }
+            $this->validateSimpleTextContent($value);
+            break;
+          default :
+            break;
+        }
+        // dump($properties);
+        // dump($value);
+      }
+    }
+  }
+  private function validateSimpleTextContent($content):void{
+    $validModuleTypes = ["parag","link"];
+    foreach($content as $module){
+      dump($module);
+      if(!isset($module->type)){
+        $this->result['isValid'] = false;
+        $this->result['messages']['module'][] = 'the module should have a type.';
+        return;
+      }
+      if(!in_array($module->type,$validModuleTypes)){
+        $this->result['isValid'] = false;
+        $this->result['messages']['module'][] = 'type de module non valide.';
+        return;
+      }
+      
+    }
+    unset($validModuleTypes);
   }
 }
