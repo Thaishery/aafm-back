@@ -39,28 +39,46 @@ class CategoriesController extends AbstractController
   #[Route('/api/auth/categories', name: 'add_category', methods: 'POST')]
   public function addCategory(#[CurrentUser] ? User $user, Request $req, EntityManagerInterface $manager): JsonResponse
   {
-
 		if(!$this->roleChecker->checkUserHaveRole('ROLE_ADMIN', $user))return $this->json(['message'=>'Interdis'], JsonResponse::HTTP_FORBIDDEN);
     $postData = json_decode($req->getContent(), false);
     if(!$postData||empty($postData)) return $this->json(['message' =>'Données invalide'], JsonResponse::HTTP_FORBIDDEN);
 		$isValid = $this->categoriesValidator->validateCategory($postData);
 		if($isValid['isValid'] == false) return $this->json($isValid['messages'], JsonResponse::HTTP_FORBIDDEN);
 
-		// $existingMenu = $manager->getRepository(Categories::class)->findOneBy(['Role' => $postData->role]);
-		// if($existingMenu) return $this->json(['message'=>$existingMenu->getId()],JsonResponse::HTTP_ACCEPTED);
+		$existingCategory = $manager->getRepository(Categories::class)->findOneBy(['name' => $postData->name]);
+		if($existingCategory) return $this->json(['message'=>$existingCategory->getId()],JsonResponse::HTTP_ACCEPTED);
 		
-		// $categoryOrm = new CategoryOrm($manager);
-		// $created = $categoryOrm->createCategory($postData);
-		// if(!$created) return $this->json(['message'=>'Erreur lors de l\'insertion en base de données'],JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+		$categoryOrm = new CategoryOrm($manager);
+		$created = $categoryOrm->createCategory($postData);
+		if(!$created) return $this->json(['message'=>'Erreur lors de l\'insertion en base de données'],JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
     return $this->json(['message' => 'OK'],JsonResponse::HTTP_OK);
   }
 
-  #[Route('/categories', name: 'app_categories')]
-  public function index(): JsonResponse
+  #[Route('/api/auth/categories/{id}', name: 'edit_categories', methods:'PUT')]
+  public function editMenu(#[CurrentUser] ? User $user, Request $req, EntityManagerInterface $manager, int $id): JsonResponse
   {
-    return $this->json([
-      'message' => 'Welcome to your new controller!',
-      'path' => 'src/Controller/CategoriesController.php',
-    ]);
+		if(null == $id) return $this->json(['message' =>'Id manquant'], JsonResponse::HTTP_FORBIDDEN);
+		if(!$this->roleChecker->checkUserHaveRole('ROLE_ADMIN', $user))return $this->json(['message'=>'Interdis'], JsonResponse::HTTP_FORBIDDEN);
+		$postData = json_decode($req->getContent(), false);
+    if(!$postData||empty($postData)) return $this->json(['message' =>'Données invalide'], JsonResponse::HTTP_FORBIDDEN);
+		
+    // $isValid = $this->menuValidator->validateEditMenu($postData);
+		// if($isValid['isValid'] == false) return $this->json($isValid['messages'], JsonResponse::HTTP_FORBIDDEN);
+		// $menu = $manager->getRepository(Menus::class)->findOneBy(['id'=>$id]);
+		// if(empty($menu)|| null == $menu) return $this->json(['message'=>'menu introuvable'], JsonResponse::HTTP_FORBIDDEN);
+		// $menuOrm = new MenuOrm($manager);
+		// $edited = $menuOrm->editMenu($menu,$postData);
+		// if(!$edited) return $this->json(['message'=>'Erreur lors de l\'édition du menu.'],JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+
+		return $this->json(['message' => 'OK'],JsonResponse::HTTP_OK);
   }
+
+  // #[Route('/categories', name: 'app_categories')]
+  // public function index(): JsonResponse
+  // {
+  //   return $this->json([
+  //     'message' => 'Welcome to your new controller!',
+  //     'path' => 'src/Controller/CategoriesController.php',
+  //   ]);
+  // }
 }

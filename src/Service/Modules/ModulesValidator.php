@@ -18,7 +18,7 @@ class ModulesValidator {
   private function setValiableModulesType():array{
     return [
       'slider',
-
+      'simpleText'
     ];
   }
 
@@ -110,27 +110,56 @@ class ModulesValidator {
           default :
             break;
         }
-        // dump($properties);
-        // dump($value);
       }
     }
   }
   private function validateSimpleTextContent($content):void{
-    $validModuleTypes = ["parag","link"];
+    $validSubModuleTypes = ["parag","link"];
     foreach($content as $module){
-      dump($module);
       if(!isset($module->type)){
         $this->result['isValid'] = false;
         $this->result['messages']['module'][] = 'the module should have a type.';
         return;
       }
-      if(!in_array($module->type,$validModuleTypes)){
+      if(!in_array($module->type,$validSubModuleTypes)){
         $this->result['isValid'] = false;
         $this->result['messages']['module'][] = 'type de module non valide.';
         return;
       }
-      
+      switch($module->type){
+        case 'parag':
+          if(!isset($module->value)){
+            $this->result['isValid'] = false;
+            $this->result['messages']['module'][$module->type] = 'la propriéte value ne peut être vide';
+            break;
+          }
+          if(!preg_match('/\w{2,}/',$module->value)){
+            $this->result['isValid'] = false;
+            $this->result['messages']['module'][$module->type] = 'la propriéte value est incorect. ';
+          }
+          break;
+        case 'link':
+          //?
+          if(!isset($module->link,$module->value)){
+            $this->result['isValid'] = false;
+            $this->result['messages']['module'][$module->type] = 'la propriéte value et ou link ne peut être vide';
+            break;
+          }
+          if(!filter_var($module->link,FILTER_VALIDATE_URL)){
+            $this->result['isValid'] = false;
+            $this->result['messages']['module'][$module->type] = 'la propriéte link est invalide';
+          }
+          if(!preg_match('/\w{2,255}/',$module->value)){
+            $this->result['isValid'] = false;
+            $this->result['messages']['module'][$module->type] = 'la propriéte value est invalide';
+          }
+          break;
+        default:
+          $this->result['isValid'] = false;
+          $this->result['messages']['module'][$module->type] = 'type non gérer';
+          break;
+      }
     }
-    unset($validModuleTypes);
+    unset($validSubModuleTypes);
   }
 }
