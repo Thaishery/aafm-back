@@ -33,7 +33,6 @@ class ModulesValidator {
         $this->validateSlider($val);
         break;
       case 'simpleText':
-        // dump($val);
         $this->validateSimpleText($val);
         break;
       default : 

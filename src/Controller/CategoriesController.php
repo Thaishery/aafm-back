@@ -61,15 +61,13 @@ class CategoriesController extends AbstractController
 		if(!$this->roleChecker->checkUserHaveRole('ROLE_ADMIN', $user))return $this->json(['message'=>'Interdis'], JsonResponse::HTTP_FORBIDDEN);
 		$postData = json_decode($req->getContent(), false);
     if(!$postData||empty($postData)) return $this->json(['message' =>'Données invalide'], JsonResponse::HTTP_FORBIDDEN);
-		
-    // $isValid = $this->menuValidator->validateEditMenu($postData);
-		// if($isValid['isValid'] == false) return $this->json($isValid['messages'], JsonResponse::HTTP_FORBIDDEN);
-		// $menu = $manager->getRepository(Menus::class)->findOneBy(['id'=>$id]);
-		// if(empty($menu)|| null == $menu) return $this->json(['message'=>'menu introuvable'], JsonResponse::HTTP_FORBIDDEN);
-		// $menuOrm = new MenuOrm($manager);
-		// $edited = $menuOrm->editMenu($menu,$postData);
-		// if(!$edited) return $this->json(['message'=>'Erreur lors de l\'édition du menu.'],JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-
+    $isValid = $this->categoriesValidator->validateCategory($postData);
+		if($isValid['isValid'] == false) return $this->json($isValid['messages'], JsonResponse::HTTP_FORBIDDEN);
+		$categories = $manager->getRepository(Categories::class)->findOneBy(['id'=>$id]);
+		if(empty($categories)|| null == $categories) return $this->json(['message'=>'catégorie introuvable'], JsonResponse::HTTP_FORBIDDEN);
+		$categoriesOrm = new CategoryOrm($manager);
+		$edited = $categoriesOrm->editCategory($categories,$postData);
+		if(!$edited) return $this->json(['message'=>'Erreur lors de l\'édition du menu.'],JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
 		return $this->json(['message' => 'OK'],JsonResponse::HTTP_OK);
   }
 

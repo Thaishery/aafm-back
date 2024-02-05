@@ -29,7 +29,8 @@ class CategoryOrm {
 
   public function editCategory(Categories $category, object $postData):bool{
     try{
-      $category->setContent($postData->content);
+      if(isset($postData->name))$category->setName($postData->name);
+      $category->setContent((array) $postData->content);
       $this->manager->persist($category);
       $this->manager->flush();
       return true; 
