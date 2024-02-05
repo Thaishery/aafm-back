@@ -44,14 +44,22 @@ class CategoriesController extends AbstractController
     if(!$postData||empty($postData)) return $this->json(['message' =>'Données invalide'], JsonResponse::HTTP_FORBIDDEN);
 		$isValid = $this->categoriesValidator->validateCategory($postData);
 		if($isValid['isValid'] == false) return $this->json($isValid['messages'], JsonResponse::HTTP_FORBIDDEN);
-
 		$existingCategory = $manager->getRepository(Categories::class)->findOneBy(['name' => $postData->name]);
 		if($existingCategory) return $this->json(['message'=>$existingCategory->getId()],JsonResponse::HTTP_ACCEPTED);
-		
 		$categoryOrm = new CategoryOrm($manager);
 		$created = $categoryOrm->createCategory($postData);
 		if(!$created) return $this->json(['message'=>'Erreur lors de l\'insertion en base de données'],JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
     return $this->json(['message' => 'OK'],JsonResponse::HTTP_OK);
+  }
+  
+  #[Route('/api/public/categories/{id}', name: 'get_one_categories', methods: 'GET')]
+  public function getOneCategories(EntityManagerInterface $manager, int $id): JsonResponse
+  {
+    $categories = $manager->getRepository(Categories::class)->findOneBy(['id'=>$id]);
+    if(!$categories) return $this->json(['message'=>'Catégorie non trouvé'], JsonResponse::HTTP_OK);
+    $results = array();
+    if($categories instanceof Categories) $results= $categories->populate();
+    return $this->json(['categories'=>$results],JsonResponse::HTTP_OK);
   }
 
   #[Route('/api/auth/categories/{id}', name: 'edit_categories', methods:'PUT')]
@@ -71,12 +79,17 @@ class CategoriesController extends AbstractController
 		return $this->json(['message' => 'OK'],JsonResponse::HTTP_OK);
   }
 
-  // #[Route('/categories', name: 'app_categories')]
-  // public function index(): JsonResponse
-  // {
-  //   return $this->json([
-  //     'message' => 'Welcome to your new controller!',
-  //     'path' => 'src/Controller/CategoriesController.php',
-  //   ]);
-  // }
+  #[Route('/api/auth/categories/{id}', name: 'delete_categories', methods:'DELETE')]
+  public function deleteMenu(#[CurrentUser] ? User $user, Request $req, EntityManagerInterface $manager, int $id): JsonResponse
+  {
+		if(null == $id) return $this->json(['message' =>'Id manquant'], JsonResponse::HTTP_FORBIDDEN);
+		if(!$this->roleChecker->checkUserHaveRole('ROLE_ADMIN', $user))return $this->json(['message'=>'Interdis'], JsonResponse::HTTP_FORBIDDEN);
+		$categories = $manager->getRepository(Categories::class)->findOneBy(['id'=>$id]);
+		if(empty($categories)|| null == $categories) return $this->json(['message'=>'Categories introuvable'], JsonResponse::HTTP_FORBIDDEN);
+		$categoriesOrm = new CategoryOrm($manager);
+		$deleted = $categoriesOrm->deleteCategory($categories);
+		if(!$deleted) return $this->json(['message'=>'Erreur lors de la suppression du Categories'],JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+		return $this->json(['message' => 'OK'],JsonResponse::HTTP_OK);
+  }
+
 }
