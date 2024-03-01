@@ -1,5 +1,3 @@
-#!/bin/bash
-
 #création des dossier ssh et copie de la clef(a gérer et ajouter en amont au compte git) (pour git auth):
 mkdir $HOME_DIR
 mkdir ~/.ssh/
@@ -24,28 +22,3 @@ echo "Adding SSH Key to ssh-agent" \
 touch ~/.ssh/config \
   && echo "Host $HOST_INFO" >> ~/.ssh/config \
   && echo "   ForwardAgent yes" >> ~/.ssh/config
-
-cd /usr
-
-git clone git@github.com:Thaishery/aafm-back.git
-git checkout $ENVIRONMENT
-
-cp -r /usr/aafm-back/.cicd/ /tmp/.cicd/
-chmod -R 777 /tmp/.cicd/
-
-ln -s /usr/aafm-back /var/www/symfony_docker
-
-build(){
-  . /tmp/.cicd/build.sh
-}
-
-listen(){
-  . /tmp/.cicd/listen.sh
-}
-
-sleep 10
-build
-listen
-
-# Start Symfony server
-php-fpm -F -R

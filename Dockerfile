@@ -1,13 +1,25 @@
 # php + composer + symfony. 
 # run test + start symfony.
 FROM php:8.2-fpm
-RUN apt update \
-    && apt install -y zlib1g-dev g++ git libicu-dev zip libzip-dev zip \
+
+ARG NGROK
+
+RUN apt update 
+RUN apt install -y tar ruby git ssh wget
+RUN apt install -y zlib1g-dev g++ git libicu-dev zip libzip-dev zip \
     && docker-php-ext-install intl opcache pdo pdo_mysql \
     && pecl install apcu \
     && docker-php-ext-enable apcu \
     && docker-php-ext-configure zip \
-    && docker-php-ext-install zip
+    && docker-php-ext-install zip 
+
+RUN wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
+RUN tar xvzf ./ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
+RUN ngrok authtoken ${NGROK}
+
+RUN gem install sinatra
+RUN gem install rackup
+
 
 WORKDIR /usr/local/bin
 
@@ -20,10 +32,16 @@ RUN chmod +x /usr/local/bin/composer
 RUN git config --global user.email "gdeb@gdeb.fr" \
     && git config --global user.name "Thaishery"
 
-WORKDIR /var/www
+# WORKDIR /var/www
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+#set env var: 
+ENV ENVIRONMENT $ENVIRONMENT
+ENV HOME_DIR $HOME_DIR
+ENV NGROK_FRONT_URL $NGROK_FRONT_URL
+
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 # EXPOSE 9000
