@@ -1,15 +1,20 @@
-#!/bin/bash
+#!/bin/sh
+
+webhook_port=8089
+
+project_dir="/usr/aafm-back"
 
 #création des dossier ssh et copie de la clef(a gérer et ajouter en amont au compte git) (pour git auth):
+echo "making : $HOME_DIR"
 mkdir $HOME_DIR
-mkdir ~/.ssh/
+# mkdir ~/.ssh/
 cp -r /tmp/.ssh/ $HOME_DIR/.ssh/
 chmod -R 700 $HOME_DIR
 
 # Setup Git Config
-echo "Setting Git Config Values"
-git config --global user.email "gdeb@gdeb.fr" && \
-git config --global user.name "Thaishery"
+# echo "Setting Git Config Values"
+# git config --global user.email "gdeb@gdeb.fr" && \
+# git config --global user.name "Thaishery"
 
 # Setup Git Folders
 echo "Adding Host Key for Github"
@@ -28,12 +33,15 @@ touch ~/.ssh/config \
 cd /usr
 
 git clone git@github.com:Thaishery/aafm-back.git
+cd /usr/aafm-back
+pwd
 git checkout $ENVIRONMENT
 
 cp -r /usr/aafm-back/.cicd/ /tmp/.cicd/
 chmod -R 777 /tmp/.cicd/
-
-ln -s /usr/aafm-back /var/www/symfony_docker
+# chmod -R +x /usr/aafm-back
+# ln -s /usr/aafm-back /var/www/symfony_docker
+cp -r /usr/aafm-back/ /var/www/symfony_docker/aafm-back/
 
 build(){
   . /tmp/.cicd/build.sh
@@ -43,7 +51,7 @@ listen(){
   . /tmp/.cicd/listen.sh
 }
 
-sleep 10
+# sleep 10
 build
 listen
 

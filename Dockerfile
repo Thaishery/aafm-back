@@ -5,7 +5,7 @@ FROM php:8.2-fpm
 ARG NGROK
 
 RUN apt update 
-RUN apt install -y tar ruby git ssh wget
+RUN apt install -y tar ruby git ssh wget bash
 RUN apt install -y zlib1g-dev g++ git libicu-dev zip libzip-dev zip \
     && docker-php-ext-install intl opcache pdo pdo_mysql \
     && pecl install apcu \
@@ -40,7 +40,7 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 #set env var: 
 ENV ENVIRONMENT $ENVIRONMENT
 ENV HOME_DIR $HOME_DIR
-ENV NGROK_FRONT_URL $NGROK_FRONT_URL
+ENV NGROK_BACK_URL $NGROK_BACK_URL
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
