@@ -34,14 +34,19 @@ cd /usr
 
 git clone git@github.com:Thaishery/aafm-back.git
 cd /usr/aafm-back
-pwd
 git checkout $ENVIRONMENT
 
+cp /home/symfony/.env /usr/aafm-back/.env
 cp -r /usr/aafm-back/.cicd/ /tmp/.cicd/
 chmod -R 777 /tmp/.cicd/
 # chmod -R +x /usr/aafm-back
 # ln -s /usr/aafm-back /var/www/symfony_docker
-cp -r /usr/aafm-back/ /var/www/symfony_docker/aafm-back/
+# cp -r /usr/aafm-back/ /var/www/symfony_docker/aafm-back/
+ln -s /usr/aafm-back/ /var/www/symfony_docker/aafm-back/
+
+cd /var/www/symfony_docker/aafm-back/
+# mv /home/symfony/.env /var/www/symfony_docker/aafm-back/.env
+composer install
 
 build(){
   . /tmp/.cicd/build.sh

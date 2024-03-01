@@ -35,6 +35,7 @@ RUN git config --global user.email "gdeb@gdeb.fr" \
 # WORKDIR /var/www
 
 COPY docker-entrypoint.sh /usr/local/bin/
+COPY .env /home/symfony/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 #set env var: 
