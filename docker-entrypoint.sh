@@ -30,10 +30,11 @@ git clone git@github.com:Thaishery/aafm-back.git
 cd /usr/aafm-back
 git checkout $ENVIRONMENT
 
-cp /home/symfony/.env /usr/aafm-back/.env
 cp -r /usr/aafm-back/.cicd/ /tmp/.cicd/
 chmod -R 777 /tmp/.cicd/
-ln -s /usr/aafm-back/ /var/www/symfony_docker/aafm-back/
+mkdir /var/www/symfony_docker/aafm-back/
+mv /usr/aafm-back/* /var/www/symfony_docker/aafm-back/
+cp /home/symfony/.env /var/www/symfony_docker/aafm-back/.env
 
 cd /var/www/symfony_docker/aafm-back/
 composer install
@@ -47,7 +48,7 @@ listen(){
 }
 
 # sleep 10
-build
+build >/dev/null 2>&1 &
 listen
 
 # Start Symfony server
