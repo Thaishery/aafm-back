@@ -27,5 +27,6 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 # EXPOSE 9000
+# CMD php-fpm
 # RUN symfony server:start --port=9000 -d
 # CMD symfony server:start --port=9000 -d

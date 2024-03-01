@@ -1,65 +1,89 @@
-# docker compose build
-# docker compose up -d (-d) si pas de log necesseraires (sur serveur ...)
+# docker compose up -d (-d) si pas de log (PROD)
 
 version : '3.8'
-
 services: 
   database:
     container_name: database
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: toor
-      MYSQL_DATABASE: aafm-back
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE_PROD_NAME}
       MYSQL_USER: symfony
       MYSQL_PASSWORD: symfony
     ports:
-      - '4306:3306'
+      - '3306'
     volumes:
       - ./mysql:/var/lib/mysql
+
   database-test:
     container_name: database-test
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: toor
-      MYSQL_DATABASE: aafm-back-test
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE_TESTS_NAME}
       MYSQL_USER: symfony
       MYSQL_PASSWORD: symfony
     ports:
-      - '4307:3306'
+      - '3306'
     volumes:
       - ./mysql-test:/var/lib/mysql
+
   php:
     container_name: php
     build:
       context: ./aafm-back
-    ports:
-      - "9000:9000"
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+      MYSQL_USER_PROD: ${MYSQL_USER_PROD}
+      MYSQL_PASSWORD_PROD: ${MYSQL_PASSWORD_PROD}
+      MYSQL_USER_TESTS: ${MYSQL_USER_TESTS}
+      MYSQL_PASSWORD_TESTS: ${MYSQL_PASSWORD_TESTS}
     volumes:
       - ./aafm-back:/var/www/symfony_docker
     depends_on:
       - database
       - database-test
-  # nginx-back:
-  #   container_name: nginx-back
-  #   image: nginx:stable-alpine
-  #   ports:
-  #     - '8080:80'
-  #   volumes:
-  #     - ./aafm-back:/var/www/symfony_docker
-  #     - ./aafm-back/nginx/default.conf:/etc/nginx/conf.d/default.conf
-  #   depends_on:
-  #     - php
-  #     - database
-  #     - database-test
-  nginx-front:
-    container_name: nginx-front
+
+  build-front:
+    container_name: build-front
     build:
       context: ./aafm-front
-    # tty: true  # Allocate a pseudo-TTY for interactive shell
-    # stdin_open: true  # Keep STDIN open for interactive shell
-    # command: ["/bin/bash"]
-    ports:
-      - "8081:80"
+      args:
+        HOME_DIR: ${HOME_DIR}
+        NGROK: ${NGROK}
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+      HOME_DIR: ${HOME_DIR}
+      HOST_INFO: ${HOST_INFO}
     volumes:
+      - ${GIT_SSH_KEY_PATH}:/tmp/.ssh/:ro
+      - /usr/aafm-front
+    # depends_on:
+    #   - php
+    # restart: "no"
+
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - '8081:8081'
+    volumes_from:
+      - build-front
+    volumes:
+      - ./aafm-back:/var/www/symfony_docker
       # - ./aafm-front:/usr/aafm-front
-      - ./aafm-front/nginx/default.conf:/etc/nginx/http.d/default.conf
+      - ./aafm-back/nginx/default.conf:/etc/nginx/conf.d/default.conf
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.0
+    container_name: phpmyadmin
+    links:
+      - database
+      - database-test
+    environment:
+      PMA_HOSTS: database,database-test
+      PMA_PORT: 3306
+    ports:
+      - 8082:80
+

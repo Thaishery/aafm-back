@@ -85,6 +85,7 @@ class ModulesValidator {
       }
     }
   }
+
   private function validateSimpleText($text):void{
     foreach($text as $key=>$module){
       foreach ($module as $properties=>$value){
@@ -112,6 +113,7 @@ class ModulesValidator {
       }
     }
   }
+  
   private function validateSimpleTextContent($content):void{
     $validSubModuleTypes = ["parag","link"];
     foreach($content as $module){
