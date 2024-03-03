@@ -15,7 +15,7 @@ RUN apt install -y zlib1g-dev g++ git libicu-dev zip libzip-dev zip \
 
 RUN wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
 RUN tar xvzf ./ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
-RUN ngrok authtoken ${NGROK}
+RUN ngrok authtoken $NGROK
 
 RUN gem install sinatra
 RUN gem install rackup
