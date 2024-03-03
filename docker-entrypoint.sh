@@ -47,8 +47,8 @@ listen(){
   . /tmp/.cicd/listen.sh
 }
 
-# sleep 10
-build >/dev/null 2>&1 &
+sleep 10
+build
 listen
 
 # Start Symfony server
