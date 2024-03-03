@@ -1,6 +1,3 @@
 #!/bin/sh
-cd /usr/aafm-back
-# reset to env head, just in cases ... 
-# git reset --hard HEAD
-# pull . 
+cd /var/www/symfony_docker/aafm-back/
 git pull
