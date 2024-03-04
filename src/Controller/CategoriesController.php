@@ -63,7 +63,7 @@ class CategoriesController extends AbstractController
   }
 
   #[Route('/api/auth/categories/{id}', name: 'edit_categories', methods:'PUT')]
-  public function editMenu(#[CurrentUser] ? User $user, Request $req, EntityManagerInterface $manager, int $id): JsonResponse
+  public function editCategories(#[CurrentUser] ? User $user, Request $req, EntityManagerInterface $manager, int $id): JsonResponse
   {
 		if(null == $id) return $this->json(['message' =>'Id manquant'], JsonResponse::HTTP_FORBIDDEN);
 		if(!$this->roleChecker->checkUserHaveRole('ROLE_ADMIN', $user))return $this->json(['message'=>'Interdis'], JsonResponse::HTTP_FORBIDDEN);
@@ -80,7 +80,7 @@ class CategoriesController extends AbstractController
   }
 
   #[Route('/api/auth/categories/{id}', name: 'delete_categories', methods:'DELETE')]
-  public function deleteMenu(#[CurrentUser] ? User $user, Request $req, EntityManagerInterface $manager, int $id): JsonResponse
+  public function deleteCategories(#[CurrentUser] ? User $user, Request $req, EntityManagerInterface $manager, int $id): JsonResponse
   {
 		if(null == $id) return $this->json(['message' =>'Id manquant'], JsonResponse::HTTP_FORBIDDEN);
 		if(!$this->roleChecker->checkUserHaveRole('ROLE_ADMIN', $user))return $this->json(['message'=>'Interdis'], JsonResponse::HTTP_FORBIDDEN);

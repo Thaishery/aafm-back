@@ -80,8 +80,17 @@ class ArticlesController extends AbstractController
 		$created = $articlesOrm->editArticle($articles,$categorie,$postData);
 		if(!$created) return $this->json(['message'=>'Erreur lors de l\'insertion en base de données'],JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
     return $this->json(['message' => 'OK'],JsonResponse::HTTP_OK);
-
-		// return $this->json(['message'=>$articles->populate()],JsonResponse::HTTP_OK);
 	}
-
+	#[Route('/api/auth/articles/{id}', name: 'delete_article', methods:'DELETE')]
+	public function deleteArticle(#[CurrentUser] ? User $user, Request $req, EntityManagerInterface $manager, int $id) :JsonResponse
+	{
+		if(null == $id) return $this->json(['message' =>'Id manquant'], JsonResponse::HTTP_FORBIDDEN);
+		if(!$this->roleChecker->checkUserHaveRole('ROLE_ADMIN', $user))return $this->json(['message'=>'Interdis'], JsonResponse::HTTP_FORBIDDEN);
+		$articles = $manager->getRepository(Articles::class)->findOneBy(['id'=>$id]);
+		if(empty($articles)|| null == $articles) return $this->json(['message'=>'Article introuvable'], JsonResponse::HTTP_FORBIDDEN);
+		$articlesOrm = new ArticlesOrm($manager);
+		$deleted = $articlesOrm->deleteArticle($articles);
+		if(!$deleted) return $this->json(['message'=>'Erreur lors de la suppression du Categories'],JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+		return $this->json(['message' => 'OK'],JsonResponse::HTTP_OK);
+	}
 }
