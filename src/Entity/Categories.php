@@ -70,7 +70,8 @@ class Categories
         return [
             'id' => $this->getId(),
             'name' => $this->getName(),
-            'content'=>$this->getContent()
+            'content'=>$this->getContent(),
+            'articles'=>$this->getArticles()
         ];
     }
 
