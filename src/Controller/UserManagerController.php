@@ -17,7 +17,7 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 class UserManagerController extends AbstractController
 {
   #[Route('/api/auth/users/internal/edituser', name: 'app_user_manager', methods:'POST')]
-  public function index(#[CurrentUser] ? User $user, Request $req, UserPasswordHasherInterface $passwordHasher,EntityManagerInterface $manager): JsonResponse
+  public function editUser(#[CurrentUser] ? User $user, Request $req, UserPasswordHasherInterface $passwordHasher,EntityManagerInterface $manager): JsonResponse
   {
     //varifie data : 
     $postData = json_decode($req->getContent(), false);
