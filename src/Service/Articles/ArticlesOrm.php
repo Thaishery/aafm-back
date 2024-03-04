@@ -37,10 +37,13 @@ class ArticlesOrm {
     return false;
   }
 
-  public function editArticle(Articles $article, object $postData):bool{
+  public function editArticle(Articles $article, Categories $categories, object $postData):bool{
     try{
-      if(isset($postData->name))$article->setTitle($postData->name);
-      $article->setContenu((array) $postData->content);
+      $article->setTitle($postData->title);
+      $article->setContenu((array) $postData->contenu);
+      $article->setIdCategorie($categories);
+      $article->setIsPublish($postData->is_publish);
+      $article->setEditedAt(now());
       $this->manager->persist($article);
       $this->manager->flush();
       return true; 

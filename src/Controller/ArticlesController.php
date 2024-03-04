@@ -45,7 +45,7 @@ class ArticlesController extends AbstractController
   {
 		$articles = $manager->getRepository(Articles::class)->findOneBy(['id'=>$id]);
 		if(!$articles) return $this->json(['message'=>'pas d\'articles trouver'], JsonResponse::HTTP_OK);
-		return $this->json(['message'=>$articles],JsonResponse::HTTP_OK);
+		return $this->json(['message'=>$articles->populate()],JsonResponse::HTTP_OK);
   }
 
 	#[Route('/api/auth/articles', name: 'add_article', methods:'POST')]
@@ -63,4 +63,25 @@ class ArticlesController extends AbstractController
 		if(!$created) return $this->json(['message'=>'Erreur lors de l\'insertion en base de données'],JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
     return $this->json(['message' => 'OK'],JsonResponse::HTTP_OK);
 	}
+
+	#[Route('/api/auth/articles/{id}', name: 'edit_article', methods:'PUT')]
+	public function editArticle(#[CurrentUser] ? User $user, Request $req, EntityManagerInterface $manager, int $id) :JsonResponse
+	{
+		if(!$this->roleChecker->checkUserHaveRole('ROLE_ADMIN', $user))return $this->json(['message'=>'Interdis'], JsonResponse::HTTP_FORBIDDEN);
+    $postData = json_decode($req->getContent(), false);
+		if(!$postData||empty($postData)) return $this->json(['message' =>'Données invalide'], JsonResponse::HTTP_FORBIDDEN);
+		$isValid = $this->articleValidator->validateArticle($postData);
+		if($isValid['isValid'] == false) return $this->json($isValid['messages'], JsonResponse::HTTP_FORBIDDEN);
+		$categorie = $manager->getRepository(Categories::class)->findOneById($postData->id_categorie);
+		if(!$categorie) return $this->json(['message'=>'catégori non trouvée.'],JsonResponse::HTTP_INTERNAL_SERVER_ERROR); 
+		$articles = $manager->getRepository(Articles::class)->findOneBy(['id'=>$id]);
+		if(!$articles) return $this->json(['message'=>'pas d\'articles trouver'], JsonResponse::HTTP_OK);
+		$articlesOrm = new ArticlesOrm($manager);
+		$created = $articlesOrm->editArticle($articles,$categorie,$postData);
+		if(!$created) return $this->json(['message'=>'Erreur lors de l\'insertion en base de données'],JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+    return $this->json(['message' => 'OK'],JsonResponse::HTTP_OK);
+
+		// return $this->json(['message'=>$articles->populate()],JsonResponse::HTTP_OK);
+	}
+
 }

@@ -67,11 +67,21 @@ class Categories
      */
     public function populate(): array
     {
+        $articlesData = [];
+        $articles = $this->getArticles();
+        foreach ($articles as $article) {
+            $articlesData[] = [
+                'id'=>$article->getId(),
+                'title'=>$article->getTitle(),
+                'is_publish'=>$article->isIsPublish(),
+                // 'contenu'=>$article->getContenu(),
+            ];
+        }
         return [
             'id' => $this->getId(),
             'name' => $this->getName(),
             'content'=>$this->getContent(),
-            'articles'=>$this->getArticles()
+            'articles'=>$articlesData,
         ];
     }
 
