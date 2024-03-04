@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -38,6 +40,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: '0', nullable: true)]
     private ?string $externalId = null;
+
+    #[ORM\OneToMany(mappedBy: 'auteur', targetEntity: Articles::class, orphanRemoval: true)]
+    private Collection $articles;
+
+    public function __construct()
+    {
+        $this->articles = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -153,6 +163,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setExternalId(?string $externalId): static
     {
         $this->externalId = $externalId;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Articles>
+     */
+    public function getArticles(): Collection
+    {
+        return $this->articles;
+    }
+
+    public function addArticle(Articles $article): static
+    {
+        if (!$this->articles->contains($article)) {
+            $this->articles->add($article);
+            $article->setAuteur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArticle(Articles $article): static
+    {
+        if ($this->articles->removeElement($article)) {
+            // set the owning side to null (unless already changed)
+            if ($article->getAuteur() === $this) {
+                $article->setAuteur(null);
+            }
+        }
 
         return $this;
     }

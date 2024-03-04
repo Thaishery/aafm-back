@@ -18,11 +18,11 @@ class Categories
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'category', targetEntity: Articles::class)]
-    private Collection $articles;
-
     #[ORM\Column]
     private array $content = [];
+
+    #[ORM\OneToMany(mappedBy: 'id_categorie', targetEntity: Articles::class, orphanRemoval: true)]
+    private Collection $articles;
 
     public function __construct()
     {
@@ -46,35 +46,7 @@ class Categories
         return $this;
     }
 
-    /**
-     * @return Collection<int, Articles>
-     */
-    public function getArticles(): Collection
-    {
-        return $this->articles;
-    }
 
-    public function addArticle(Articles $article): static
-    {
-        if (!$this->articles->contains($article)) {
-            $this->articles->add($article);
-            $article->setCategory($this);
-        }
-
-        return $this;
-    }
-
-    public function removeArticle(Articles $article): static
-    {
-        if ($this->articles->removeElement($article)) {
-            // set the owning side to null (unless already changed)
-            if ($article->getCategory() === $this) {
-                $article->setCategory(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function getContent(): array
     {
@@ -98,8 +70,37 @@ class Categories
         return [
             'id' => $this->getId(),
             'name' => $this->getName(),
-            'articles'=>$this->getArticles(),
             'content'=>$this->getContent()
         ];
+    }
+
+    /**
+     * @return Collection<int, Articles>
+     */
+    public function getArticles(): Collection
+    {
+        return $this->articles;
+    }
+
+    public function addArticle(Articles $article): static
+    {
+        if (!$this->articles->contains($article)) {
+            $this->articles->add($article);
+            $article->setIdCategorie($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArticle(Articles $article): static
+    {
+        if ($this->articles->removeElement($article)) {
+            // set the owning side to null (unless already changed)
+            if ($article->getIdCategorie() === $this) {
+                $article->setIdCategorie(null);
+            }
+        }
+
+        return $this;
     }
 }

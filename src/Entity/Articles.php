@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ArticlesRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ArticlesRepository::class)]
@@ -13,14 +14,25 @@ class Articles
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::TEXT)]
     private ?string $title = null;
 
+    #[ORM\ManyToOne(inversedBy: 'articles')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Categories $id_categorie = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $contenu = null;
+
     #[ORM\Column]
-    private array $contenu = [];
+    private ?\DateTimeImmutable $created_at = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $edited_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'articles')]
-    private ?Categories $category = null;
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $auteur = null;
 
     public function getId(): ?int
     {
@@ -39,26 +51,62 @@ class Articles
         return $this;
     }
 
-    public function getContenu(): array
+    public function getIdCategorie(): ?Categories
+    {
+        return $this->id_categorie;
+    }
+
+    public function setIdCategorie(?Categories $id_categorie): static
+    {
+        $this->id_categorie = $id_categorie;
+
+        return $this;
+    }
+
+    public function getContenu(): ?string
     {
         return $this->contenu;
     }
 
-    public function setContenu(array $contenu): static
+    public function setContenu(string $contenu): static
     {
         $this->contenu = $contenu;
 
         return $this;
     }
 
-    public function getCategory(): ?Categories
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->category;
+        return $this->created_at;
     }
 
-    public function setCategory(?Categories $category): static
+    public function setCreatedAt(\DateTimeImmutable $created_at): static
     {
-        $this->category = $category;
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getEditedAt(): ?\DateTimeImmutable
+    {
+        return $this->edited_at;
+    }
+
+    public function setEditedAt(?\DateTimeImmutable $edited_at): static
+    {
+        $this->edited_at = $edited_at;
+
+        return $this;
+    }
+
+    public function getAuteur(): ?User
+    {
+        return $this->auteur;
+    }
+
+    public function setAuteur(?User $auteur): static
+    {
+        $this->auteur = $auteur;
 
         return $this;
     }
