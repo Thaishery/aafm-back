@@ -30,6 +30,12 @@ class ModulesValidator {
           'simpleText'
         ];
         break;
+      case 'articles':
+        $viablesModules = [
+          'slider',
+          'simpleText'
+        ];
+        break;
       default:
         $viablesModules = [];
         break;

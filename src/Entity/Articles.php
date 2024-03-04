@@ -21,8 +21,9 @@ class Articles
     #[ORM\JoinColumn(nullable: false)]
     private ?Categories $id_categorie = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $contenu = null;
+
+    #[ORM\Column]
+    private array $contenu = [];
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
@@ -33,6 +34,9 @@ class Articles
     #[ORM\ManyToOne(inversedBy: 'articles')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $auteur = null;
+
+    #[ORM\Column]
+    private ?bool $is_publish = null;
 
     public function getId(): ?int
     {
@@ -63,12 +67,12 @@ class Articles
         return $this;
     }
 
-    public function getContenu(): ?string
+    public function getContenu(): ?array
     {
         return $this->contenu;
     }
 
-    public function setContenu(string $contenu): static
+    public function setContenu(array $contenu): static
     {
         $this->contenu = $contenu;
 
@@ -107,6 +111,18 @@ class Articles
     public function setAuteur(?User $auteur): static
     {
         $this->auteur = $auteur;
+
+        return $this;
+    }
+
+    public function isIsPublish(): ?bool
+    {
+        return $this->is_publish;
+    }
+
+    public function setIsPublish(bool $is_publish): static
+    {
+        $this->is_publish = $is_publish;
 
         return $this;
     }
