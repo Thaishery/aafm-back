@@ -1,27 +1,27 @@
 <?php
-namespace App\Service\Category;
+namespace App\Service\Page;
 
 use App\Service\DefaultValidator;
 use App\Service\Modules\ModulesValidator;
 
-class CategoriesValidator extends DefaultValidator {
+class PagesValidator extends DefaultValidator {
   private $valiableModulesType;
   private $moduleValidator; 
   public function __construct()
   {
     parent::__construct();
-    //? for now ... may be moved to it's own class to failitate maintnability .
-    $this->moduleValidator = new ModulesValidator('categories'); 
-    $this->valiableModulesType =  $this->moduleValidator->getValiableModulesType('categories');
+    //? for now ... may be moved to it's own class to facilitate maintnability .
+    $this->moduleValidator = new ModulesValidator('pages'); 
+    $this->valiableModulesType =  $this->moduleValidator->getValiableModulesType();
     // $this->maxPost = 5;
   }
 
-  public function validateCategory(object $postData){
+  public function validatePages(object $postData){
     $this->validatePostDataLength($postData);
     if(!$this->result['isValid']) return $this->result;
-    
+
     //? requiere fields detection here : 
-    $requieredField = ["name"];
+    $requieredField = ["name", "description"];
     foreach($requieredField as $field){
       if (!array_key_exists($field, (array) $postData)){
         $this->result['isValid'] = false;
@@ -38,18 +38,6 @@ class CategoriesValidator extends DefaultValidator {
           }
           break;
         case 'content' : 
-          //? pas de titre : 
-          if(!isset($val->title)){
-            $this->result['isValid'] = false;
-            $this->result['messages'][$key][] = 'titre requis.';
-            break;
-          }
-          //? titre invalide : 
-          if(!preg_match('/[\w,{2,255}]/',$val->title)){
-            $this->result['isValid'] = false;
-            $this->result['messages'][$key][] = 'titre non valide.';
-            break;
-          }
           if(!isset($val->modules)){
             $this->result['isValid'] = false;
             $this->result['messages'][$key][] = 'modules requis.';

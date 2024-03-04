@@ -6,20 +6,35 @@ class ModulesValidator {
   private $result;
   private $valiableModulesType;
 
-  public function __construct(){
+  public function __construct(string $contentType){
     $this->result = [];
-    $this->valiableModulesType = $this->setValiableModulesType();
+    $this->valiableModulesType = $this->setValiableModulesType($contentType);
   }
 
   public function getValiableModulesType():array{
     return $this->valiableModulesType;
   }
 
-  private function setValiableModulesType():array{
-    return [
-      'slider',
-      'simpleText'
-    ];
+  private function setValiableModulesType(string $contentType):array{
+    $viablesModules = [];
+    switch($contentType){
+      case 'categories':
+        $viablesModules = [
+          'slider',
+          'simpleText'
+        ];
+        break;
+      case 'pages':
+        $viablesModules = [
+          'slider',
+          'simpleText'
+        ];
+        break;
+      default:
+        $viablesModules = [];
+        break;
+    }
+    return $viablesModules;
   }
 
   public function moduleTypeValidators($type,$val):array{
