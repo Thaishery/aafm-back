@@ -19,6 +19,7 @@ class PageOrm {
   public function createPage( object $postData):bool{
     try{
       $page = new Pages;
+      now();
       $page->setName($postData->name);
       $page->setContent((array) $postData->content);
       $this->manager->persist($page);

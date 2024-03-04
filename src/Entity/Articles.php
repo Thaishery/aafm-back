@@ -126,4 +126,19 @@ class Articles
 
         return $this;
     }
+
+    /**
+     * Returns an array representation of the entity.
+     *
+     * @return array
+     */
+    public function populate(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getTitle(),
+            'content'=>$this->getContenu(),
+            'categorie'=>$this->getIdCategorie()
+        ];
+    }
 }

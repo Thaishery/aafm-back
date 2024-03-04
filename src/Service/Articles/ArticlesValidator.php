@@ -21,7 +21,7 @@ class ArticlesValidator extends DefaultValidator {
     if(!$this->result['isValid']) return $this->result;
     
     //? requiere fields detection here : 
-    $requieredField = ["name"];
+    $requieredField = ["title","contenu","is_publish","id_categorie"];
     foreach($requieredField as $field){
       if (!array_key_exists($field, (array) $postData)){
         $this->result['isValid'] = false;
@@ -31,25 +31,13 @@ class ArticlesValidator extends DefaultValidator {
 
     foreach($postData as $key =>$val){
       switch ($key){
-        case 'name' :
+        case 'title' :
           if(!preg_match('/[\w,{2,255}]/',$val)){
             $this->result['isValid'] = false;
             $this->result['messages'][$key][] = 'Should be any acsi char from 2 to 255 char';
           }
           break;
-        case 'content' : 
-          //? pas de titre : 
-          if(!isset($val->title)){
-            $this->result['isValid'] = false;
-            $this->result['messages'][$key][] = 'titre requis.';
-            break;
-          }
-          //? titre invalide : 
-          if(!preg_match('/[\w,{2,255}]/',$val->title)){
-            $this->result['isValid'] = false;
-            $this->result['messages'][$key][] = 'titre non valide.';
-            break;
-          }
+        case 'contenu' : 
           if(!isset($val->modules)){
             $this->result['isValid'] = false;
             $this->result['messages'][$key][] = 'modules requis.';
@@ -61,6 +49,19 @@ class ArticlesValidator extends DefaultValidator {
             break;
           }
           $this->validateModules($val->modules);
+          break;
+        case 'is_publish':
+          if(!is_bool($val)){
+            $this->result['isValid'] = false;
+            $this->result['messages'][$key][] = 'is_publish devrais être un bool.';
+          }
+          break;
+        case 'id_categorie':
+          if(!is_numeric($val)){
+            $this->result['isValid'] = false;
+            $this->result['messages'][$key][] = 'id_categorie devrais être un number.'; 
+            break;
+          }
           break;
       }
     }

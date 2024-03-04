@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Articles;
+use App\Entity\Categories;
 use App\Entity\User;
 use App\Service\Article\ArticlesOrm;
 use App\Service\Article\ArticlesValidator;
@@ -30,7 +31,13 @@ class ArticlesController extends AbstractController
   {
 		$articles = $manager->getRepository(Articles::class)->findBy(['is_publish'=>true],['created_at'=>'DESC']);
 		if(!$articles) return $this->json(['message'=>'pas d\'articles trouver'], JsonResponse::HTTP_OK);
-		return $this->json(['message'=>$articles],JsonResponse::HTTP_OK);
+		$results = array();
+		foreach ($articles as $key => $val) {
+      if($val instanceof Articles){
+					$results[]=$val->populate();
+			}
+    }
+		return $this->json(['message'=>$results],JsonResponse::HTTP_OK);
   }
 
 	#[Route('/api/public/articles/{id}', name: 'get_article_by_id', methods: 'GET')]
@@ -49,9 +56,10 @@ class ArticlesController extends AbstractController
     if(!$postData||empty($postData)) return $this->json(['message' =>'Données invalide'], JsonResponse::HTTP_FORBIDDEN);
 		$isValid = $this->articleValidator->validateArticle($postData);
 		if($isValid['isValid'] == false) return $this->json($isValid['messages'], JsonResponse::HTTP_FORBIDDEN);
-		
-		$menuOrm = new ArticlesOrm($manager);
-		$created = $menuOrm->createArticle($postData);
+		$categorie = $manager->getRepository(Categories::class)->findOneById($postData->id_categorie);
+		if(!$categorie) return $this->json(['message'=>'catégori non trouvée. '],JsonResponse::HTTP_INTERNAL_SERVER_ERROR); 
+		$articlesOrm = new ArticlesOrm($manager);
+		$created = $articlesOrm->createArticle($postData,$categorie,$user);
 		if(!$created) return $this->json(['message'=>'Erreur lors de l\'insertion en base de données'],JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
     return $this->json(['message' => 'OK'],JsonResponse::HTTP_OK);
 	}
