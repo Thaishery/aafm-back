@@ -136,7 +136,10 @@ class Articles
     {
         return [
             'id' => $this->getId(),
-            'categorie'=>$this->getIdCategorie()->getId(),
+            'categorie'=>[
+                'id'=>$this->getIdCategorie()->getId(),
+                'name'=>$this->getIdCategorie()->getName(),
+            ],
             'name' => $this->getTitle(),
             'content'=>$this->getContenu(),
         ];
