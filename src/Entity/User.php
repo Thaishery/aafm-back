@@ -44,9 +44,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'auteur', targetEntity: Articles::class, orphanRemoval: true)]
     private Collection $articles;
 
+    #[ORM\ManyToMany(targetEntity: Activitees::class, mappedBy: 'user')]
+    private Collection $activitees;
+
     public function __construct()
     {
         $this->articles = new ArrayCollection();
+        $this->activitees = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -192,6 +196,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             if ($article->getAuteur() === $this) {
                 $article->setAuteur(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Activitees>
+     */
+    public function getActivitees(): Collection
+    {
+        return $this->activitees;
+    }
+
+    public function addActivitee(Activitees $activitee): static
+    {
+        if (!$this->activitees->contains($activitee)) {
+            $this->activitees->add($activitee);
+            $activitee->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActivitee(Activitees $activitee): static
+    {
+        if ($this->activitees->removeElement($activitee)) {
+            $activitee->removeUser($this);
         }
 
         return $this;
