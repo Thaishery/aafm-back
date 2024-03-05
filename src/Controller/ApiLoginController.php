@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\Response;
 //User related : 
 use App\Entity\User;
 use App\Service\GoogleOAuth2\GetToken;
+use App\Service\GoogleOAuth2\GetUserInfos;
+use App\Service\User\UserExternalManager;
 use App\Service\User\UserValidator;
 use App\Service\User\UserInternalCreator;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
@@ -49,8 +51,16 @@ class ApiLoginController extends AbstractController
     ]);
   }
 
+  #[Route('/api/users/internal/googlelogin/{uuid}', name: 'api_google_login')]
+  public function googleLogin(string $uuid,EntityManagerInterface $manager,JWTTokenManagerInterface $jwtManager): Response
+  {
+    $userManager = new UserExternalManager();
+    $response = $userManager->logExternalUser($uuid,$manager,$jwtManager);
+    return $this->json($response,Response::HTTP_OK);
+  }
+
   #[Route('/api/users/external/login/', name: 'api_external_login',methods:'GET')]
-  public function externalLogin(Request $req)
+  public function externalLogin(Request $req,UserPasswordHasherInterface $passwordHasher,EntityManagerInterface $manager,JWTTokenManagerInterface $jwtManager)
   {
     $error= $req->query->get('error');
     if(isset($error)&&!empty($error))return $this->json(['message'=>$error],Response::HTTP_UNAUTHORIZED);
@@ -59,14 +69,17 @@ class ApiLoginController extends AbstractController
       'code'=>$code,
     ];
     $token = new GetToken($response);
-    $token = $token->getToken();
+    $token = json_decode($token->getToken(),false);
     if(!$token) return $this->json(['message'=>'erreur lors de la récupération du token'],Response::HTTP_ACCEPTED);
-
-    //! there we have an refresh token, and a token, let's find out if we have to create an account or no :thinking:
-    //! we will have to bind the token to the user too ... 
-
-    return $this->json(['message'=>$token],Response::HTTP_ACCEPTED);
+    $userInfos = new GetUserInfos($token);
+    $userInfos = $userInfos->getUserInfos();
+    if(!$userInfos)return $this->json(['message'=>'Imposible de décoder le JWT GOOGLE'],Response::HTTP_ACCEPTED);
+    //? on as les infos, on les envoi a notre manager : 
+    $userManager = new UserExternalManager();
+    $response = $userManager->createOrPrepareExternalUser($userInfos,$passwordHasher,$manager,$jwtManager);
+    return $this->redirect($_ENV['CLIENT_URL'].'/googleauth/'.$response);
   }
+  
   #[Route('/api/users/internal/register', name:'api_register', methods:'POST')]
   public function registerUser(Request $request, UserPasswordHasherInterface $passwordHasher,EntityManagerInterface $manager, UserInternalCreator $userCreator): Response
   {
