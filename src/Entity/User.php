@@ -47,6 +47,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Activitees::class, mappedBy: 'user')]
     private Collection $activitees;
 
+    #[ORM\OneToOne(inversedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?Adhesion $id_adhesion = null;
+
     public function __construct()
     {
         $this->articles = new ArrayCollection();
@@ -224,6 +227,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->activitees->removeElement($activitee)) {
             $activitee->removeUser($this);
         }
+
+        return $this;
+    }
+
+    public function getIdAdhesion(): ?Adhesion
+    {
+        return $this->id_adhesion;
+    }
+
+    public function setIdAdhesion(?Adhesion $id_adhesion): static
+    {
+        $this->id_adhesion = $id_adhesion;
 
         return $this;
     }

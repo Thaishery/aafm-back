@@ -5,7 +5,7 @@ use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpClient\HttpClient;
 
 class GetToken {
-  private $code = "";
+  private $code;
   public function __construct($infos)
   {
     $this->code = $infos['code'];
