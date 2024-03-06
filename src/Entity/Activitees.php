@@ -119,6 +119,27 @@ class Activitees
         return $this;
     }
 
+    public function populate(User $user){
+        $users = $this->getUser();
+        $inscrit = false;
+        foreach($users as $activityUser){
+            if($activityUser->getId() == $user->getId()){
+                $inscrit = true;
+            }
+        }
+        return [
+            'id'=>$this->getId(),
+            'date'=>$this->getDate(),
+            'nom'=>$this->getNom(),
+            'description'=>$this->getDescription(),
+            'places'=>$this->getPlaces(),
+            'is_open'=>$this->isIsOpen(),
+            'lieu'=>$this->getLieu(),
+            'place_libres'=>$this->getPlaces()-count($this->getUser())>0?$this->getPlaces()-count($this->getUser()):0,
+            'inscrit'=>$inscrit
+        ];
+    }
+
     /**
      * @return Collection<int, User>
      */

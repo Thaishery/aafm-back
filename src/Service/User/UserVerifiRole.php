@@ -22,7 +22,8 @@ class UserVerifiRole{
       0=>'ROLE_PUBLIC',
       1=>'ROLE_USER',
       2=>'ROLE_MEMBER',
-      3=>'ROLE_ADMIN'
+      3=>'ROLE_MODERATOR',
+      4=>'ROLE_ADMIN'
     ];
   }
 }

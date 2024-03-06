@@ -1,7 +1,9 @@
 <?php
 namespace App\Service\Category;
 
+use App\Entity\Articles;
 use App\Entity\Categories;
+use App\Service\Article\ArticlesOrm;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 
@@ -40,8 +42,14 @@ class CategoryOrm {
     return false;
   }
 
+  //! will probably crash HARD on me ... 
   public function deleteCategory(Categories $category):bool{
     try{
+      $articles = $this->manager->getRepository(Articles::class)->findAllBy(['categotyId'=>$category->getId()]);
+      foreach($articles as $article){
+        $articlesOrm = new ArticlesOrm($this->manager);
+        $articlesOrm->deleteArticle($article);
+      }
       $this->manager->remove($category);
       $this->manager->flush();
       return true;
