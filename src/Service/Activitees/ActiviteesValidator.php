@@ -70,17 +70,4 @@ class ActiviteesValidator extends DefaultValidator {
     return $this->result;
   }
 
-  /**
-  * @param string $string
-  * @return bool
-  */
-  public function isTimestamp(string $string)
-  {
-    try {
-      new DateTime('@' . $string);
-    } catch(Exception $e) {
-      return false;
-    }
-    return true;
-  }
 }

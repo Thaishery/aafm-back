@@ -1,6 +1,7 @@
 <?php
 namespace App\Service\User;
 
+use App\Entity\Adhesion;
 use App\Entity\User;
 // use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,6 +23,13 @@ class UserInternalCreator{
     $manager->persist($user);
     $manager->flush();
     $user = $manager->getRepository(User::class)->findOneBy(['email'=>$postData->email]);
+
+    // $adhesion = new Adhesion();
+    // $adhesion->setStatut('pending');
+    // $adhesion->setIsPaid(false);
+    // $adhesion->setUser($user);
+    // $manager->persist($adhesion);
+    // $manager->flush();
     if(!$user)return false;
     return $user;
   }

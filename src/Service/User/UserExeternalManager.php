@@ -1,6 +1,7 @@
 <?php
 namespace App\Service\User;
 
+use App\Entity\Adhesion;
 use App\Entity\User;
 use Doctrine\ORM\EntityManager;
 // use App\Repository\UserRepository;
@@ -27,6 +28,13 @@ class UserExternalManager{
       $manager->persist($user);
       $manager->flush();
       $existUser = $manager->getRepository(User::class)->findOneBy(['email'=>$userInfos->email]);
+
+      // $adhesion = new Adhesion();
+      // $adhesion->setStatut('pending');
+      // $adhesion->setIsPaid(false);
+      // $adhesion->setUser($user);
+      // $manager->persist($adhesion);
+      // $manager->flush();
     }
     //? une fois celui-ci créer, on va générer un one time external_id : 
     if(!$existUser) return false; //? a ce stade une erreur est survenu... 

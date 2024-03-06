@@ -1,6 +1,9 @@
 <?php
 namespace App\Service;
 
+use DateTime;
+use Exception;
+
 class DefaultValidator {
   
   protected $result;
@@ -32,5 +35,19 @@ class DefaultValidator {
       'isValid'  => true,
       'messages' => [],
     ];
+  }
+
+  /**
+  * @param string $string
+  * @return bool
+  */
+  public function isTimestamp(string $string)
+  {
+    try {
+      new DateTime('@' . $string);
+    } catch(Exception $e) {
+      return false;
+    }
+    return true;
   }
 }

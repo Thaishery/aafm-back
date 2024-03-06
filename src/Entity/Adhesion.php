@@ -26,7 +26,8 @@ class Adhesion
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $commentaire = null;
 
-    #[ORM\OneToOne(mappedBy: 'id_adhesion', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: "User", inversedBy: "adhesion")]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id")]
     private ?User $user = null;
 
     public function getId(): ?int
@@ -102,5 +103,16 @@ class Adhesion
         $this->user = $user;
 
         return $this;
+    }
+
+    public function populate(){
+        return [
+            'id'=>$this->getId(),
+            'date'=>$this->getDate(),
+            'statut'=>$this->getStatut(),
+            'is_paid'=>$this->isIsPaid(),
+            'commentaire'=>$this->getCommentaire(),
+            'user_id'=>$this->getUser()->getId(),
+        ];
     }
 }
