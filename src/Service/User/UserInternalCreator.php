@@ -21,6 +21,8 @@ class UserInternalCreator{
     if(!empty($postData->lastname)) $user->setLastname($postData->lastname);
     $manager->persist($user);
     $manager->flush();
-    return true;
+    $user = $manager->getRepository(User::class)->findOneBy(['email'=>$postData->email]);
+    if(!$user)return false;
+    return $user;
   }
 }

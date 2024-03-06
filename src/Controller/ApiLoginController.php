@@ -81,7 +81,7 @@ class ApiLoginController extends AbstractController
   }
   
   #[Route('/api/users/internal/register', name:'api_register', methods:'POST')]
-  public function registerUser(Request $request, UserPasswordHasherInterface $passwordHasher,EntityManagerInterface $manager, UserInternalCreator $userCreator): Response
+  public function registerUser(Request $request, UserPasswordHasherInterface $passwordHasher,EntityManagerInterface $manager, UserInternalCreator $userCreator,JWTTokenManagerInterface $jwtManager): Response
   {
     //vérifie que l'on as bien un post : 
     $postData = json_decode($request->getContent(), false);
@@ -99,6 +99,12 @@ class ApiLoginController extends AbstractController
     $user = $userCreator->createInternalUser($postData, $passwordHasher, $manager);
     if(!$user) return $this->json(['message' => 'Erreur lors de la création de l\'utilisateur'],Response::HTTP_INTERNAL_SERVER_ERROR);
     
+    $token = $jwtManager->create($user);
+
+    return $this->json([
+        'user'  => $user->getUserIdentifier(),
+        'token' => $token,
+    ]);
     //réponse ok (utilisateur créer) : 
     return $this->json(
       $postData
