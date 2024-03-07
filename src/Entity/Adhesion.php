@@ -26,7 +26,7 @@ class Adhesion
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $commentaire = null;
 
-    #[ORM\OneToOne(targetEntity: "User", inversedBy: "adhesion")]
+    #[ORM\OneToOne(targetEntity: "User", inversedBy: "id_adhesion")]
     #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id")]
     private ?User $user = null;
 

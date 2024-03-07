@@ -34,19 +34,18 @@ class AdhesionController extends AbstractController
     return $this->json($adhesion->populate(),Response::HTTP_OK);
   }
 
-  // #[Route('/api/auth/adhesion/{id}', name: 'get_adhesion_by_id', methods:'GET')]
-  // public function getUserAdhesionById(#[CurrentUser]? User $user,?Adhesion $adhesion,EntityManagerInterface $manager): JsonResponse
-  // {
-  //   dump($adhesion);
-  //   if(!$this->roleChecker->checkUserHaveRole('ROLE_MODERATOR',$user)||$user !== $adhesion->getUser())return $this->json(['message'=>'Droits Insufisants'],Response::HTTP_FORBIDDEN);
-  //   if(!$adhesion)return $this->json(['message'=>'Adhesion non retrouvé']);
-  //   return $this->json($adhesion->populate(),Response::HTTP_OK);
-  // }
+  #[Route('/api/auth/adhesion/{id}', name: 'get_adhesion_by_id', methods:'GET')]
+  public function getUserAdhesionById(#[CurrentUser]? User $user,Adhesion $adhesion,EntityManagerInterface $manager): JsonResponse
+  {
+    if(!$this->roleChecker->checkUserHaveRole('ROLE_MODERATOR',$user)&&$user !== $adhesion->getUser())return $this->json(['message'=>'Droits Insufisants'],Response::HTTP_FORBIDDEN);
+    if(!$adhesion)return $this->json(['message'=>'Adhesion non retrouvé']);
+    return $this->json($adhesion->populate(),Response::HTTP_OK);
+  }
 
   #[Route('/api/auth/adhesion/user/{id}', name: 'get_adhesion_by_user_id', methods:'GET')]
   public function getUserAdhesionByUserId(#[CurrentUser]? User $user,?User $userToGet,EntityManagerInterface $manager): JsonResponse
   {
-    if(!$this->roleChecker->checkUserHaveRole('ROLE_MODERATOR',$user)||$user !== $userToGet)return $this->json(['message'=>'Droits Insufisants'],Response::HTTP_FORBIDDEN);
+    if(!$this->roleChecker->checkUserHaveRole('ROLE_MODERATOR',$user)&&$user !== $userToGet)return $this->json(['message'=>'Droits Insufisants'],Response::HTTP_FORBIDDEN);
     $adhesion = $manager->getRepository(Adhesion::class)->findOneBy(['user'=>$userToGet]);
     if(!$adhesion)return $this->json(['message'=>'Adhesion non retrouvé']);
     return $this->json($adhesion->populate(),Response::HTTP_OK);
