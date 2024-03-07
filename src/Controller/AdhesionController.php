@@ -35,7 +35,7 @@ class AdhesionController extends AbstractController
   }
 
   #[Route('/api/auth/adhesion/{id}', name: 'get_adhesion_by_id', methods:'GET')]
-  public function getUserAdhesionById(#[CurrentUser]? User $user,Adhesion $adhesion,EntityManagerInterface $manager): JsonResponse
+  public function getUserAdhesionById(#[CurrentUser]? User $user,?Adhesion $adhesion,EntityManagerInterface $manager): JsonResponse
   {
     if(!$this->roleChecker->checkUserHaveRole('ROLE_MODERATOR',$user)&&$user !== $adhesion->getUser())return $this->json(['message'=>'Droits Insufisants'],Response::HTTP_FORBIDDEN);
     if(!$adhesion)return $this->json(['message'=>'Adhesion non retrouvé']);
@@ -50,7 +50,6 @@ class AdhesionController extends AbstractController
     if(!$adhesion)return $this->json(['message'=>'Adhesion non retrouvé']);
     return $this->json($adhesion->populate(),Response::HTTP_OK);
   }
-
 
   
   #[Route('/api/auth/adhesion', name: 'add_current_user_adhesion', methods:'POST')]
@@ -127,6 +126,5 @@ class AdhesionController extends AbstractController
     if(!$edited)return $this->json(['message'=>'Modification echoué'],Response::HTTP_INTERNAL_SERVER_ERROR);
     return $this->json(['message'=>'ok'],Response::HTTP_OK);
   }
-
 
 }

@@ -59,6 +59,7 @@ class UserExternalManager{
     $manager->persist($user);
     $manager->flush();
     //return result : 
+    error_log(json_encode($response));
     return $response;
   }
 

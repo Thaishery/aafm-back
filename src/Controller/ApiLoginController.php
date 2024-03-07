@@ -25,14 +25,16 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface; // I
 
 //database persistance : 
 use Doctrine\ORM\EntityManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class ApiLoginController extends AbstractController
 {
 
-  public function __construct(
-    private LoggerInterface $logger,
-) {
-}
+  public function __construct( private LoggerInterface $logger, private JWTEncoderInterface $jwtEncoder) 
+  {
+  }
 
   #[Route('/api/users/internal/login', name: 'api_login')]
   public function login(#[CurrentUser] ? User $user,JWTTokenManagerInterface $jwtManager): Response
@@ -43,6 +45,30 @@ class ApiLoginController extends AbstractController
       ], Response::HTTP_UNAUTHORIZED);
     }
 
+    $token = $jwtManager->create($user);
+
+    return $this->json([
+        'user'  => $user->getUserIdentifier(),
+        'token' => $token,
+    ]);
+  }
+
+  #[Route('/api/users/internal/validateToken', name: 'validate_token', methods:'POST')]
+  public function validateToken(Request $req,EntityManagerInterface $manager,JWTTokenManagerInterface $jwtManager): Response
+  {
+    $postData = json_decode($req->getContent(), false);
+    if(!$postData||empty($postData)) return $this->json(['message' =>'Données invalide'], Response::HTTP_FORBIDDEN);
+    if(!isset($postData->token)) return $this->json(['message'=>'token Ivalide'],Response::HTTP_FORBIDDEN);
+    $valid = true;
+    try {
+      $payload = $this->jwtEncoder->decode($postData->token);
+    } catch (JWTDecodeFailureException $ex) {
+      $valid = false;
+    }
+    if(!$valid)return $this->json(['message'=>'token Ivalide'],Response::HTTP_FORBIDDEN);
+    if(!isset($payload["username"]))return $this->json(['message'=>'token Ivalide'],Response::HTTP_FORBIDDEN);
+    $user = $manager->getRepository(User::class)->findOneBy(['email'=>$payload['username']]);
+    if(!$user) return $this->json(['message'=>'token Ivalide'],Response::HTTP_FORBIDDEN);
     $token = $jwtManager->create($user);
 
     return $this->json([

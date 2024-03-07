@@ -23,12 +23,13 @@ class AdhesionOrm {
       $adhesion = new Adhesion;
       $adhesion->setStatut($postData->statut);
       $adhesion->setIsPaid($postData->is_paid);
+      if(isset($postData->commentaire))$adhesion->setCommentaire($postData->commentaire);
       $adhesion->setUser($user);
       $this->manager->persist($adhesion);
       $this->manager->flush();
+      $this->manageStatutAndRole($adhesion);
       return true;
     }catch(Exception $error){
-      dump($error);
       return false;
     }
     return false;
@@ -36,12 +37,13 @@ class AdhesionOrm {
 
   public function editAdhesion(Adhesion $adhesion, object $postData):bool{
     try{
-      if($postData->date)$adhesion->setDate($postData->date);
-      if($postData->statut)$adhesion->setStatut($postData->statut);
-      if($postData->is_paid)$adhesion->setIsPaid($postData->is_paid);
-      if($postData->commentaire)$adhesion->setCommentaire($postData->commentaire);
+      if(isset($postData->date))$adhesion->setDate($postData->date);
+      if(isset($postData->statut))$adhesion->setStatut($postData->statut);
+      if(isset($postData->is_paid))$adhesion->setIsPaid($postData->is_paid);
+      if(isset($postData->commentaire))$adhesion->setCommentaire($postData->commentaire);
       $this->manager->persist($adhesion);
       $this->manager->flush();
+      $this->manageStatutAndRole($adhesion);
       return true; 
     }catch(Exception $error){
       return false;
@@ -58,5 +60,24 @@ class AdhesionOrm {
       return false; 
     }
     return false;
+  }
+
+  private function manageStatutAndRole(Adhesion $adhesion){
+    $userToEdit = $adhesion->getUser();
+    $userRoles = $userToEdit->getRoles();
+    if($adhesion->isIsPaid()){
+      if(!in_array('ROLE_MEMBER',$userRoles)) {
+        array_push($userRoles,'ROLE_MEMBER');
+      }
+    }
+    if(!$adhesion->isIsPaid()){
+      if(in_array('ROLE_MEMBER',$userRoles)){
+        array_splice($userRoles,array_search('ROLE_MEMBER',$userRoles),1);
+      }
+    }
+    $userToEdit->setRoles($userRoles);
+    $this->manager->persist($userToEdit);
+    $this->manager->flush();
+    unset($userToEdit, $userRoles);
   }
 }
