@@ -17,19 +17,20 @@ class GetToken {
       dump($_ENV['GOOGLE_CLIENT_SECRET']);
       dump($this->code);
       dump($_ENV['CLIENT_URL']);
-      $response = $client->request('POST', 'https://oauth2.googleapis.com/token', [
-        'headers' => [
-            'Content-Type' => 'application/x-www-form-urlencoded',
-        ],
-        'body' => http_build_query([
-          'client_id'=>$_ENV['GOOGLE_CLIENT_ID'],
-          'client_secret'=>$_ENV['GOOGLE_CLIENT_SECRET'],
-          'code'=>$this->code,
-          'grant_type'=>'authorization_code',
-          'redirect_uri'=>$_ENV['CLIENT_URL'].":8081/api/users/external/login",
-        ])
-      ]);
-      return $response->getContent();
+      return false;
+      // $response = $client->request('POST', 'https://oauth2.googleapis.com/token', [
+      //   'headers' => [
+      //       'Content-Type' => 'application/x-www-form-urlencoded',
+      //   ],
+      //   'body' => http_build_query([
+      //     'client_id'=>$_ENV['GOOGLE_CLIENT_ID'],
+      //     'client_secret'=>$_ENV['GOOGLE_CLIENT_SECRET'],
+      //     'code'=>$this->code,
+      //     'grant_type'=>'authorization_code',
+      //     'redirect_uri'=>$_ENV['CLIENT_URL'].":8081/api/users/external/login",
+      //   ])
+      // ]);
+      // return $response->getContent();
     }catch (ClientException $err) {
       // Affichez les détails de l'exception pour le débogage
       dump($err);
