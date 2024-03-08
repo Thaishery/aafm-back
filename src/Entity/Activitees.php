@@ -139,6 +139,20 @@ class Activitees
             'inscrit'=>$inscrit
         ];
     }
+    public function populatefromUser(){
+        $inscrit = true;
+        return [
+            'id'=>$this->getId(),
+            'date'=>$this->getDate(),
+            'nom'=>$this->getNom(),
+            'description'=>$this->getDescription(),
+            'places'=>$this->getPlaces(),
+            'is_open'=>$this->isIsOpen(),
+            'lieu'=>$this->getLieu(),
+            'place_libres'=>$this->getPlaces()-count($this->getUser())>0?$this->getPlaces()-count($this->getUser()):0,
+            'inscrit'=>$inscrit
+        ];
+    }
 
     /**
      * @return Collection<int, User>

@@ -10,12 +10,19 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 class UserManagerController extends AbstractController
 {
+
+  #[Route('/api/auth/users/getSelf', name:'user_get_self', methods:'GET')]
+  public function getSelf(#[CurrentUser] ? User $user) : Response {
+    return $this->json($user->populate(),Response::HTTP_OK);
+  }
+
   #[Route('/api/auth/users/internal/edituser', name: 'app_user_manager', methods:'POST')]
   public function editUser(#[CurrentUser] ? User $user, Request $req, UserPasswordHasherInterface $passwordHasher,EntityManagerInterface $manager): JsonResponse
   {

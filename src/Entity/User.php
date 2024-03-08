@@ -6,6 +6,7 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use stdClass;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -241,5 +242,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->id_adhesion = $id_adhesion;
 
         return $this;
+    }
+
+    public function getPopulatedActivitees(){
+        $activitees = $this->getActivitees();
+        $result = [];
+        foreach($activitees as $activitee){
+            $result[] = $activitee->populatefromUser();
+        }
+        return $result;
+    }
+
+    public function populate(){
+        return [
+            'id' => $this->getId(),
+            'email' => $this->getEmail(),
+            'firstname'=>$this->getFirstname(),
+            'lastname'=>$this->getLastname(),
+            'adhesion'=>(!null == $this->getIdAdhesion())?$this->getIdAdhesion()->populate():new stdClass,
+            'articles'=>$this->getArticles(),
+            'activitees'=>$this->getPopulatedActivitees(),
+        ];
     }
 }
