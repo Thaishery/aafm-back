@@ -13,6 +13,10 @@ class GetToken {
   public function getToken(){
     $client = HttpClient::create();
     try{
+      dump($_ENV['GOOGLE_CLIENT_ID']);
+      dump($_ENV['GOOGLE_CLIENT_SECRET']);
+      dump($this->code);
+      dump($_ENV['CLIENT_URL']);
       $response = $client->request('POST', 'https://oauth2.googleapis.com/token', [
         'headers' => [
             'Content-Type' => 'application/x-www-form-urlencoded',
