@@ -28,11 +28,10 @@ class GetToken {
       ]);
       return $response->getContent();
     }catch (ClientException $err) {
-      // Affichez les détails de l'exception pour le débogage
-      dump($err);
-      dump($err->getMessage());
-      // Vous pouvez également vérifier le code de statut HTTP de la réponse
-      dump($err->getResponse()->getStatusCode());
+      // // Affichez les détails de l'exception pour le débogage
+      // dump($err->getMessage());
+      // // Vous pouvez également vérifier le code de statut HTTP de la réponse
+      // dump($err->getResponse()->getStatusCode());
       return false;
     }
   }
