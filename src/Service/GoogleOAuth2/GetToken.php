@@ -26,7 +26,7 @@ class GetToken {
           'client_secret'=>$_ENV['GOOGLE_CLIENT_SECRET'],
           'code'=>$this->code,
           'grant_type'=>'authorization_code',
-          'redirect_uri'=>$_ENV['CLIENT_URL']."/api/users/external/login",
+          'redirect_uri'=>$_ENV['CLIENT_URL'].":8081/api/users/external/login",
         ])
       ]);
       return $response->getContent();
