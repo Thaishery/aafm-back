@@ -26,6 +26,13 @@ class ActiviteesController extends AbstractController
     $this->activiteesValidator = new ActiviteesValidator();
   }
   
+  /**
+   * Récupére les activité d'un utilisateur connecter 
+   * @param User $user utilisateur actuel
+   * @param EntityManagerInterface $manager ORM repository
+   * @return JsonResponse 
+   * @author gdeb@gdeb.fr
+   */
   #[Route('/api/auth/activitees', name: 'get_all_activitees', methods:'GET')]
   public function getAllActivitees(#[CurrentUser]? User $user,EntityManagerInterface $manager): JsonResponse
   {

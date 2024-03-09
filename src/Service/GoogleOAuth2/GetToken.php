@@ -13,6 +13,7 @@ class GetToken {
   public function getToken(){
     $client = HttpClient::create();
     try{
+      $redirect_uri = $_ENV['CLIENT_URL'] . ':'. $_ENV['SELF_PORT'] .'/api/users/external/login';
       $response = $client->request('POST', 'https://oauth2.googleapis.com/token', [
         'headers' => [
             'Content-Type' => 'application/x-www-form-urlencoded',
@@ -22,7 +23,7 @@ class GetToken {
           'client_secret'=>$_ENV['GOOGLE_CLIENT_SECRET'],
           'code'=>$this->code,
           'grant_type'=>'authorization_code',
-          'redirect_uri'=> 'http://localhost:8000/api/users/external/login',
+          'redirect_uri'=> $redirect_uri,
         ])
       ]);
       return $response->getContent();
