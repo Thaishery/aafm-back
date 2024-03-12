@@ -1,9 +1,6 @@
 <?php 
 namespace App\Service\GoogleOAuth2;
 
-use Symfony\Component\HttpClient\Exception\ClientException;
-use Symfony\Component\HttpClient\HttpClient;
-
 class GetUserInfos {
   private $token = "";
   public function __construct($token)
