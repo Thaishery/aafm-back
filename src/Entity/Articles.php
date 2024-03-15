@@ -38,6 +38,9 @@ class Articles
     #[ORM\Column]
     private ?bool $is_publish = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?array $description = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -143,5 +146,17 @@ class Articles
             'name' => $this->getTitle(),
             'content'=>$this->getContenu(),
         ];
+    }
+
+    public function getDescription(): ?array
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?array $description): static
+    {
+        $this->description = $description;
+
+        return $this;
     }
 }

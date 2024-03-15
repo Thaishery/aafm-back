@@ -39,6 +39,14 @@ class PagesController extends AbstractController
     return $this->json(['content'=>$results],JsonResponse::HTTP_OK);
   }
 
+  #[Route('/api/public/pages/{name}', name: 'get_name_content',methods:'GET')]
+  public function getNameContent(? Pages $pages , EntityManagerInterface $manager): JsonResponse
+  {
+    if(empty($pages))return $this->json(['message'=>'Erreur lors du chargement des donées'],JsonResponse::HTTP_NO_CONTENT);
+    if($pages instanceof Pages) $results= $pages->populate();
+    return $this->json(['content'=>$results],JsonResponse::HTTP_OK);
+  }
+
   #[Route('/api/auth/pages/edit_home_content', name: 'edit_home_content', methods:'PUT')]
   public function editHomeContent(#[CurrentUser] ? User $user, Request $req, EntityManagerInterface $manager): JsonResponse
   {

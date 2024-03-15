@@ -52,11 +52,20 @@ class CategoriesController extends AbstractController
     return $this->json(['message' => 'OK'],JsonResponse::HTTP_OK);
   }
   
-  #[Route('/api/public/categories/{id}', name: 'get_one_categories', methods: 'GET')]
+  #[Route('/api/public/categories/name/{name}', name: 'get_one_categories_by_name', methods: 'GET')]
+  public function getOneCategoriesByName(?Categories $categories, EntityManagerInterface $manager): JsonResponse
+  {
+    if(!$categories) return $this->json(['message'=>'Catégorie non trouvé'], JsonResponse::HTTP_NO_CONTENT);
+    // $results = array();
+    if($categories instanceof Categories) $results= $categories->populate();
+    return $this->json(['categories'=>$results],JsonResponse::HTTP_OK);
+  }
+  
+  #[Route('/api/public/categories/id/{id}', name: 'get_one_categories', methods: 'GET')]
   public function getOneCategories(EntityManagerInterface $manager, int $id): JsonResponse
   {
     $categories = $manager->getRepository(Categories::class)->findOneBy(['id'=>$id]);
-    if(!$categories) return $this->json(['message'=>'Catégorie non trouvé'], JsonResponse::HTTP_OK);
+    if(!$categories) return $this->json(['message'=>'Catégorie non trouvé'], JsonResponse::HTTP_NO_CONTENT);
     $results = array();
     if($categories instanceof Categories) $results= $categories->populate();
     return $this->json(['categories'=>$results],JsonResponse::HTTP_OK);

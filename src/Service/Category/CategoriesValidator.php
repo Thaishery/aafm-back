@@ -62,6 +62,33 @@ class CategoriesValidator extends DefaultValidator {
           }
           $this->validateModules($val->modules);
           break;
+        break;
+        case 'description':
+          //? pas de titre : 
+          if(!isset($val->title)){
+            $this->result['isValid'] = false;
+            $this->result['messages'][$key][] = 'titre requis.';
+            break;
+          }
+          //? titre invalide : 
+          if(!preg_match('/[\w,{2,255}]/',$val->title)){
+            $this->result['isValid'] = false;
+            $this->result['messages'][$key][] = 'titre non valide.';
+            break;
+          }
+          if(!isset($val->modules)){
+            $this->result['isValid'] = false;
+            $this->result['messages'][$key][] = 'modules requis.';
+            break;
+          }
+          if(!is_array($val->modules)){
+            $this->result['isValid'] = false;
+            $this->result['messages'][$key][] = 'les modules devrais être un tableau.';
+            break;
+          }
+          $this->validateModules($val->modules);
+          break;
+        break;
       }
     }
     return $this->result;

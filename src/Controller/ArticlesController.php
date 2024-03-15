@@ -47,6 +47,15 @@ class ArticlesController extends AbstractController
 		if(!$articles) return $this->json(['message'=>'pas d\'articles trouver'], JsonResponse::HTTP_OK);
 		return $this->json(['message'=>$articles->populate()],JsonResponse::HTTP_OK);
   }
+	
+	#[Route('/api/public/articles/{name}/{title}', name: 'get_article_by_title', methods: 'GET')]
+  public function getArticleByTitle(?Categories $categorie, string $title, EntityManagerInterface $manager): JsonResponse
+  {
+		if(!$categorie) return $this->json(['message'=>'Catégorie introuvable'],JsonResponse::HTTP_NO_CONTENT);
+		$articles = $manager->getRepository(Articles::class)->findOneBy(['title'=>$title,'id_categorie'=>$categorie->getId()]);
+		if(!$articles) return $this->json(['message'=>'pas d\'articles trouver'], JsonResponse::HTTP_NO_CONTENT);
+		return $this->json(['message'=>$articles->populate()],JsonResponse::HTTP_OK);
+  }
 
 	#[Route('/api/auth/articles', name: 'add_article', methods:'POST')]
 	public function addArticle(#[CurrentUser] ? User $user, Request $req, EntityManagerInterface $manager) :JsonResponse

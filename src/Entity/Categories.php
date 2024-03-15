@@ -24,6 +24,9 @@ class Categories
     #[ORM\OneToMany(mappedBy: 'id_categorie', targetEntity: Articles::class, orphanRemoval: true)]
     private Collection $articles;
 
+    #[ORM\Column(nullable: true)]
+    private ?array $description = null;
+
     public function __construct()
     {
         $this->articles = new ArrayCollection();
@@ -73,13 +76,15 @@ class Categories
             $articlesData[] = [
                 'id'=>$article->getId(),
                 'title'=>$article->getTitle(),
+                'description'=>$article->getDescription(),
                 'is_publish'=>$article->isIsPublish(),
-                // 'contenu'=>$article->getContenu(),
+                'contenu'=>$article->getContenu(),
             ];
         }
         return [
             'id' => $this->getId(),
             'name' => $this->getName(),
+            'description'=>$this->getDescription(),
             'content'=>$this->getContent(),
             'articles'=>$articlesData,
         ];
@@ -111,6 +116,18 @@ class Categories
                 $article->setIdCategorie(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDescription(): ?array
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?array $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }

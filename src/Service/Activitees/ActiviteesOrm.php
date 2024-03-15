@@ -56,7 +56,7 @@ class ActiviteesOrm {
       $users = $activitees->getUser();
       $already_in = false;
       foreach($users as $activiteeUsers){
-        if($activiteeUsers->getId()==$user->getId())$already_in = true;
+        if($activiteeUsers->getId() == $user->getId())$already_in = true;
       }
       if($already_in)return true;
       $activitees->addUser($user);
@@ -71,9 +71,9 @@ class ActiviteesOrm {
   public function deleteParticipant(User $user,Activitees $activitees){
     try{
       $users = $activitees->getUser();
-      $already_in = true;
+      $already_in = false;
       foreach($users as $activiteeUsers){
-        if($activiteeUsers->getId() !=$user->getId())$already_in = false;
+        if($activiteeUsers->getId() == $user->getId())$already_in = true;
       }
       if(!$already_in)return true;
       $activitees->removeUser($user);

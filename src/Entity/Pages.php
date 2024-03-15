@@ -117,6 +117,7 @@ class Pages
         return [
             'id' => $this->getId(),
             'name' => $this->getName(),
+            'description'=>$this->getDescription(),
             'content'=>$this->getContent()
         ];
     }
