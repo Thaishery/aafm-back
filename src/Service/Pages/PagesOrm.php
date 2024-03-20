@@ -19,7 +19,9 @@ class PageOrm {
     try{
       $page = new Pages;
       $page->setName($postData->name);
+      isset($postData->description)?$page->setDescription($postData->description):null;
       $page->setContent((array) $postData->content);
+      $page->setCreatedAt(now());
       $this->manager->persist($page);
       $this->manager->flush();
       return true;

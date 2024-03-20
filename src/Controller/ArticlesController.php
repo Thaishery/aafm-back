@@ -39,6 +39,20 @@ class ArticlesController extends AbstractController
     }
 		return $this->json(['message'=>$results],JsonResponse::HTTP_OK);
   }
+	#[Route('/api/auth/articles', name: 'get_all_articles_admin')]
+  public function getAllAdmin(#[CurrentUser] ? User $user ,EntityManagerInterface $manager): JsonResponse
+  {
+		if(!$this->roleChecker->checkUserHaveRole('ROLE_MODERATOR', $user))return $this->json(['message'=>'Interdis'], JsonResponse::HTTP_FORBIDDEN);
+		$articles = $manager->getRepository(Articles::class)->findAll();
+		if(!$articles) return $this->json(['message'=>'pas d\'articles trouver'], JsonResponse::HTTP_OK);
+		$results = array();
+		foreach ($articles as $key => $val) {
+      if($val instanceof Articles){
+					$results[]=$val->populate();
+			}
+    }
+		return $this->json(['message'=>$results],JsonResponse::HTTP_OK);
+  }
 
 	#[Route('/api/public/articles/{id}', name: 'get_article_by_id', methods: 'GET')]
   public function getArticleById(EntityManagerInterface $manager,int $id): JsonResponse

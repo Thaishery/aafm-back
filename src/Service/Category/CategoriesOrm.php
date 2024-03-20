@@ -19,6 +19,7 @@ class CategoryOrm {
     try{
       $category = new Categories;
       $category->setName($postData->name);
+      if(isset($postData->description))$category->setDescription((array)$postData->description);
       $category->setContent((array) $postData->content);
       $this->manager->persist($category);
       $this->manager->flush();
@@ -32,6 +33,7 @@ class CategoryOrm {
   public function editCategory(Categories $category, object $postData):bool{
     try{
       if(isset($postData->name))$category->setName($postData->name);
+      if(isset($postData->description))$category->setDescription((array)$postData->description);
       $category->setContent((array) $postData->content);
       $this->manager->persist($category);
       $this->manager->flush();
@@ -43,9 +45,10 @@ class CategoryOrm {
   }
 
   //! will probably crash HARD on me ... 
+  //? not that hard :thinking: ... 
   public function deleteCategory(Categories $category):bool{
     try{
-      $articles = $this->manager->getRepository(Articles::class)->findAllBy(['categotyId'=>$category->getId()]);
+      $articles = $this->manager->getRepository(Articles::class)->findBy(['id_categorie'=>$category->getId()]);
       foreach($articles as $article){
         $articlesOrm = new ArticlesOrm($this->manager);
         $articlesOrm->deleteArticle($article);
@@ -54,6 +57,7 @@ class CategoryOrm {
       $this->manager->flush();
       return true;
     }catch(Exception $error){
+      error_log($error);
       return false; 
     }
     return false;

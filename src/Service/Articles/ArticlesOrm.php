@@ -23,6 +23,7 @@ class ArticlesOrm {
       $article = new Articles;
       $article->setTitle($postData->title);
       $article->setContenu((array) $postData->contenu);
+      if(isset($postData->description))$article->setDescription((array)$postData->description);
       $article->setIdCategorie($categories);
       $article->setIsPublish($postData->is_publish);
       $article->setCreatedAt(now());
@@ -41,6 +42,7 @@ class ArticlesOrm {
     try{
       $article->setTitle($postData->title);
       $article->setContenu((array) $postData->contenu);
+      if(isset($postData->description))$article->setDescription((array)$postData->description);
       $article->setIdCategorie($categories);
       $article->setIsPublish($postData->is_publish);
       $article->setEditedAt(now());

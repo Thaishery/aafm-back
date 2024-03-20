@@ -136,7 +136,7 @@ class ModulesValidator {
   }
   
   private function validateSimpleTextContent($content):void{
-    $validSubModuleTypes = ["parag","link"];
+    $validSubModuleTypes = ["parag","link","title"];
     foreach($content as $module){
       if(!isset($module->type)){
         $this->result['isValid'] = false;
@@ -172,6 +172,12 @@ class ModulesValidator {
             $this->result['messages']['module'][$module->type] = 'la propriéte link est invalide';
           }
           if(!preg_match('/\w{2,255}/',$module->value)){
+            $this->result['isValid'] = false;
+            $this->result['messages']['module'][$module->type] = 'la propriéte value est invalide';
+          }
+          break;
+        case 'title':
+          if(!preg_match('/\w{2,1024}/',$module->value)){
             $this->result['isValid'] = false;
             $this->result['messages']['module'][$module->type] = 'la propriéte value est invalide';
           }

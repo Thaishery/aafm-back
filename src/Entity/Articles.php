@@ -145,6 +145,8 @@ class Articles
             ],
             'name' => $this->getTitle(),
             'content'=>$this->getContenu(),
+            'description'=>$this->getDescription(),
+            'is_publish'=>$this->isIsPublish()
         ];
     }
 

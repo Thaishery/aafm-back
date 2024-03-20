@@ -39,7 +39,7 @@ class CategoriesController extends AbstractController
   #[Route('/api/auth/categories', name: 'add_category', methods: 'POST')]
   public function addCategory(#[CurrentUser] ? User $user, Request $req, EntityManagerInterface $manager): JsonResponse
   {
-		if(!$this->roleChecker->checkUserHaveRole('ROLE_ADMIN', $user))return $this->json(['message'=>'Interdis'], JsonResponse::HTTP_FORBIDDEN);
+		if(!$this->roleChecker->checkUserHaveRole('ROLE_MODERATOR', $user))return $this->json(['message'=>'Interdis'], JsonResponse::HTTP_FORBIDDEN);
     $postData = json_decode($req->getContent(), false);
     if(!$postData||empty($postData)) return $this->json(['message' =>'Données invalide'], JsonResponse::HTTP_FORBIDDEN);
 		$isValid = $this->categoriesValidator->validateCategory($postData);
