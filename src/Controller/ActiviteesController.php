@@ -50,7 +50,7 @@ class ActiviteesController extends AbstractController
   #[Route('/api/auth/activitees', name: 'create_activitees', methods:'POST')]
   public function createActivitees(#[CurrentUser]? User $user,Request $req,EntityManagerInterface $manager): JsonResponse
   {
-    if(!$this->roleChecker->checkUserHaveRole('ROLE_ADMIN',$user))return $this->json(['message'=>'Droits Insuffisants'],Response::HTTP_FORBIDDEN);
+    if(!$this->roleChecker->checkUserHaveRole('ROLE_MODERATOR',$user))return $this->json(['message'=>'Droits Insuffisants'],Response::HTTP_FORBIDDEN);
     $postData = json_decode($req->getContent(), false);
     if(!$postData||empty($postData)) return $this->json(['message' =>'Données invalide'], JsonResponse::HTTP_FORBIDDEN);
 		$isValid = $this->activiteesValidator->validateActivitees($postData);

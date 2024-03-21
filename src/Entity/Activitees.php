@@ -129,7 +129,7 @@ class Activitees
         }
         return [
             'id'=>$this->getId(),
-            'date'=>$this->getDate(),
+            'date'=>$this->getDate()->getTimestamp(),
             'nom'=>$this->getNom(),
             'description'=>$this->getDescription(),
             'places'=>$this->getPlaces(),
