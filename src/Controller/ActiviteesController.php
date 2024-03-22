@@ -80,7 +80,7 @@ class ActiviteesController extends AbstractController
   public function deleteActivitees(#[CurrentUser]? User $user,?Activitees $activite,Request $req,EntityManagerInterface $manager): JsonResponse
   {
     if(!$activite)return $this->json(['message'=>'Activité non trouvé'],Response::HTTP_NOT_FOUND);
-    if(!$this->roleChecker->checkUserHaveRole('ROLE_ADMIN',$user))return $this->json(['message'=>'Droits Insuffisants'],Response::HTTP_FORBIDDEN);
+    if(!$this->roleChecker->checkUserHaveRole('ROLE_MODERATOR',$user))return $this->json(['message'=>'Droits Insuffisants'],Response::HTTP_FORBIDDEN);
     $activiteesOrm = new ActiviteesOrm($manager);
     $deleted = $activiteesOrm->deleteActivitees($activite);
 		if(!$deleted) return $this->json(['message'=>'Erreur lors de la supression'],JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
