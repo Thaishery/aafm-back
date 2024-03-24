@@ -115,4 +115,15 @@ class Adhesion
             'user_id'=>$this->getUser()->getId(),
         ];
     }
+    public function populateWithUser(){
+        return [
+            'id'=>$this->getId(),
+            'date'=>$this->getDate(),
+            'statut'=>$this->getStatut(),
+            'is_paid'=>$this->isIsPaid(),
+            'commentaire'=>$this->getCommentaire(),
+            'user_id'=>$this->getUser()->getId(),
+            'user_email'=>$this->getUser()->getEmail(),
+        ];
+    }
 }

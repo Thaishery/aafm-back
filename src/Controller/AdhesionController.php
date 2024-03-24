@@ -34,6 +34,19 @@ class AdhesionController extends AbstractController
     return $this->json($adhesion->populate(),Response::HTTP_OK);
   }
 
+  #[Route('/api/auth/all_adhesion', name: 'get_all_user_adhesion', methods:'GET')]
+  public function getAllUserAdhesion(#[CurrentUser]? User $user,EntityManagerInterface $manager): JsonResponse
+  {
+    if(!$this->roleChecker->checkUserHaveRole('ROLE_MODERATOR',$user))return $this->json(['message'=>'Droits Insufisants'],Response::HTTP_FORBIDDEN);
+    $adhesion = $manager->getRepository(Adhesion::class)->findAll();
+    if(!$adhesion)return $this->json(['message'=>'Adhesion non retrouvé']);
+    $result = [];
+    foreach($adhesion as $add){
+      $result[] = $add->populateWithUser();
+    }
+    return $this->json($result,Response::HTTP_OK);
+  }
+
   #[Route('/api/auth/adhesion/{id}', name: 'get_adhesion_by_id', methods:'GET')]
   public function getUserAdhesionById(#[CurrentUser]? User $user,?Adhesion $adhesion,EntityManagerInterface $manager): JsonResponse
   {
@@ -127,4 +140,35 @@ class AdhesionController extends AbstractController
     return $this->json(['message'=>'ok'],Response::HTTP_OK);
   }
 
+  #[Route('/api/auth/adhesion/validate/{id}', name: 'valid_adhesion_by_id', methods:'POST')]
+  public function validAdhesionById(#[CurrentUser]? User $user,?Adhesion $adhesion,EntityManagerInterface $manager): JsonResponse
+  {
+    if(!$this->roleChecker->checkUserHaveRole('ROLE_MODERATOR',$user))return $this->json(['message'=>'Droits insufisant'],Response::HTTP_FORBIDDEN);
+    if(!$adhesion)return $this->json(['message'=>'Adhesion introuvable'],Response::HTTP_FORBIDDEN);
+    $adhesionUser = $adhesion->getUser();
+    if(!$this->roleChecker->checkUserHaveRole('ROLE_MEMBER',$adhesionUser))
+    $useRoles = $adhesionUser->getRoles();
+    $useRoles[] = "ROLE_MEMBER";
+    $adhesionUser->setRoles($useRoles);
+    $adhesion->setStatut('accepted');
+    $adhesion->setIsPaid(true);
+    $manager->flush();
+    return $this->json(['message'=>'ok'],Response::HTTP_OK);
+  }
+
+  #[Route('/api/auth/adhesion/decline/{id}', name: 'decline_adhesion_by_id', methods:'POST')]
+  public function declineAdhesionById(#[CurrentUser]? User $user,?Adhesion $adhesion,EntityManagerInterface $manager): JsonResponse
+  {
+    if(!$this->roleChecker->checkUserHaveRole('ROLE_MODERATOR',$user))return $this->json(['message'=>'Droits insufisant'],Response::HTTP_FORBIDDEN);
+    if(!$adhesion)return $this->json(['message'=>'Adhesion introuvable'],Response::HTTP_FORBIDDEN);
+    $adhesionUser = $adhesion->getUser();
+    if($this->roleChecker->checkUserHaveRole('ROLE_MEMBER',$adhesionUser)){
+      $useRoles = $adhesionUser->getRoles();
+      $useRoles = array_diff($useRoles, ["ROLE_MEMBER"]);
+      $adhesionUser->setRoles($useRoles);
+    }
+    $manager->remove($adhesion);
+    $manager->flush();
+    return $this->json(['message'=>'ok'],Response::HTTP_OK);
+  }
 }
