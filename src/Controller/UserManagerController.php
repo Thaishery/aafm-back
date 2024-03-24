@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Service\User\UserEditorOrmUpdate;
 use App\Service\User\UserEditorRoleValidator;
 use App\Service\User\UserValidator;
+use App\Service\User\UserVerifiRole;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,6 +18,11 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 class UserManagerController extends AbstractController
 {
+  private $roleChecker;
+  public function __construct()
+  {
+    $this->roleChecker = new UserVerifiRole();
+  }
 
   #[Route('/api/auth/users/getSelf', name:'user_get_self', methods:'GET')]
   public function getSelf(#[CurrentUser] ? User $user) : Response {
@@ -48,6 +54,18 @@ class UserManagerController extends AbstractController
     $isUpdate = $userUpdater->updateUser($userToEdit, $postData, $passwordHasher);
     if(!$isUpdate) return $this->json(['message'=>'Une erreur d\'insertion en base de données. '],JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
     return $this->json(['message' => 'User updated'],JsonResponse::HTTP_OK);
+  }
+
+  #[Route('/api/auth/users/getAll', name:'user_get_all', methods:'GET')]
+  public function getAll(#[CurrentUser] ? User $user,EntityManagerInterface $manager) : Response {
+    if(!$user) return $this->json(['message'=>'Droits insuffisant'],Response::HTTP_FORBIDDEN);
+    if(!$this->roleChecker->checkUserHaveRole('ROLE_MODERATOR',$user)) return $this->json(['message'=>'Droits insuffisant'],Response::HTTP_FORBIDDEN);
+    $users = $manager->getRepository(User::class)->findAll();
+    $result= [];
+    foreach($users as $oneUser){
+      $result[] = $oneUser->populate();
+    }
+    return $this->json($result,Response::HTTP_OK);
   }
 
 }

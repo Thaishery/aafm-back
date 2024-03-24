@@ -47,6 +47,24 @@ class ActiviteesController extends AbstractController
     return $this->json(['message'=>$result],Response::HTTP_OK);
   }
 
+  #[Route('/api/auth/activitees_users/{id}', name: 'get_activitees_user', methods:'GET')]
+  public function getActiviteesUsers(#[CurrentUser]? User $user,?Activitees $activite,EntityManagerInterface $manager): JsonResponse
+  {
+    if(!$this->roleChecker->checkUserHaveRole('ROLE_MODERATOR',$user))return $this->json(['message'=>'Droits Insuffisants'],Response::HTTP_FORBIDDEN);
+    if(!$activite) return $this->json(['message'=>'Pas d\'activitées trouver.'],Response::HTTP_OK);
+    $users = $activite->getUser();
+    $result = [];
+    foreach ($users as $user){
+      $result[] = [
+        "id"=>$user->getId(),
+        "email"=>$user->getEmail(),
+        "firstname"=>$user->getFirstname(),
+        "lastname"=>$user->getLastname()
+      ];
+    }
+    return $this->json(['users'=>$result]);
+  }
+
   #[Route('/api/auth/activitees', name: 'create_activitees', methods:'POST')]
   public function createActivitees(#[CurrentUser]? User $user,Request $req,EntityManagerInterface $manager): JsonResponse
   {
@@ -65,7 +83,7 @@ class ActiviteesController extends AbstractController
   public function editActivitees(#[CurrentUser]? User $user,?Activitees $activite,Request $req,EntityManagerInterface $manager): JsonResponse
   {
     if(!$activite)return $this->json(['message'=>'Activité non trouvé'],Response::HTTP_NOT_FOUND);
-    if(!$this->roleChecker->checkUserHaveRole('ROLE_ADMIN',$user))return $this->json(['message'=>'Droits Insuffisants'],Response::HTTP_FORBIDDEN);
+    if(!$this->roleChecker->checkUserHaveRole('ROLE_MODERATOR',$user))return $this->json(['message'=>'Droits Insuffisants'],Response::HTTP_FORBIDDEN);
     $postData = json_decode($req->getContent(), false);
     if(!$postData||empty($postData)) return $this->json(['message' =>'Données invalide'], JsonResponse::HTTP_FORBIDDEN);
 		$isValid = $this->activiteesValidator->validateActivitees($postData);
