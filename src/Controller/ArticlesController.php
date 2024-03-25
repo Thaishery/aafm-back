@@ -39,7 +39,7 @@ class ArticlesController extends AbstractController
     }
 		return $this->json(['message'=>$results],JsonResponse::HTTP_OK);
   }
-	#[Route('/api/auth/articles', name: 'get_all_articles_admin')]
+	#[Route('/api/auth/articles', name: 'get_all_articles_admin', methods: 'GET')]
   public function getAllAdmin(#[CurrentUser] ? User $user ,EntityManagerInterface $manager): JsonResponse
   {
 		if(!$this->roleChecker->checkUserHaveRole('ROLE_MODERATOR', $user))return $this->json(['message'=>'Interdis'], JsonResponse::HTTP_FORBIDDEN);
